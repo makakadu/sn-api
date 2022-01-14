@@ -1,5 +1,3 @@
-php_value display_errors on
-
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
