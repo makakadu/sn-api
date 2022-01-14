@@ -1,0 +1,1 @@
+[2021-12-31T00:55:45.566771+02:00] server_errors_handler_middleware.ERROR: (other) Undefined index: HTTP_ORIGIN on line 4 in file /media/aleksey/F0BE6575B0AF464D/Misc/Programming/socialnetwork/scback/public/index.php. (error type: 8)  

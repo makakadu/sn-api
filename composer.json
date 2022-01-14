@@ -1,0 +1,36 @@
+{
+    "require": {
+        "php": "^7.4",
+        "ext-json": "*",
+        "beberlei/assert": "^3.2",
+        "doctrine/common": "^2.11",
+        "doctrine/dbal": "^2.9",
+        "doctrine/orm": "^2.7",
+        "doctrine/persistence": "^1.1",
+        "gedmo/doctrine-extensions": "^2.4",
+        "laminas/laminas-diactoros": "^2.4",
+        "laminas/laminas-permissions-rbac": "^3.0",
+        "middlewares/trailing-slash": "^2.0",
+        "monolog/monolog": "^2.1",
+        "php-di/php-di": "^6.0",
+        "phpunit/phpunit": "^9.2",
+        "robinvdvleuten/ulid": "^4.1",
+        "selective/config": "^0.1.1",
+        "slim/slim": "4.*",
+        "symfony/dotenv": "^5.0",
+        "tuupola/slim-jwt-auth": "^3.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\App\\": "tests/"
+        }
+    },
+    "scripts": {
+        "dev": "php -S localhost:8080 -t api api/index.php"
+    }
+}

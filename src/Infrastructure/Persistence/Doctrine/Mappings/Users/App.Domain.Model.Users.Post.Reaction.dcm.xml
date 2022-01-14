@@ -1,0 +1,22 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Users\Post\Reaction" table="user_post_reactions">
+        <id name="id" type="string"><generator strategy="NONE" /></id>
+        
+        <unique-constraints>
+            <unique-constraint columns="post_id,creator_id" name="unique_post_react" />
+        </unique-constraints>
+        
+        <many-to-one field="creator" target-entity="App\Domain\Model\Users\User\User" />
+        <many-to-one field="owner" target-entity="App\Domain\Model\Users\User\User" />
+        
+        <field name="reactionType" column="reaction_type" type="integer" />
+        <field name="createdAt" column="created_at" type="datetime" />
+
+        <many-to-one target-entity="App\Domain\Model\Users\Post\Post" field="post" inversed-by="reactions" orphan-removal='true' />
+        
+    </entity>
+</doctrine-mapping>

@@ -1,0 +1,23 @@
+[2021-12-31T01:02:07.150221+02:00] errors_handler_middleware.ERROR: User 01fkeg2e0816gakbkr0wtbg3fw not found  
+[2021-12-31T11:24:12.652037+02:00] errors_handler_middleware.ERROR: User 01fkeg2e0816gakbkr0wtbg3fw not found  
+[2021-12-31T12:24:10.749973+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T12:24:59.757607+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T12:26:08.940091+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T12:28:05.789210+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T13:19:25.872097+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-31T13:19:26.383975+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-31T13:33:58.050692+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-31T13:34:29.020875+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-31T13:34:29.256772+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-31T15:15:33.637254+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T19:12:51.422538+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-31T19:13:49.424549+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T19:13:54.698426+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T19:13:57.993379+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T19:14:07.924923+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-31T21:33:32.102222+02:00] errors_handler_middleware.ERROR: Parameter 'sex' is required and should be in request body  
+[2021-12-31T21:34:39.954442+02:00] errors_handler_middleware.ERROR: Parameter 'sex' is required and should be in request body  
+[2021-12-31T21:34:55.114388+02:00] errors_handler_middleware.ERROR: Parameter 'sex' is required and should be in request body  
+[2021-12-31T21:36:13.470662+02:00] errors_handler_middleware.ERROR: Parameter 'sex' is required and should be in request body  
+[2021-12-31T21:38:02.431264+02:00] errors_handler_middleware.ERROR: Parameter 'sex' is required and should be in request body  
+[2021-12-31T21:38:23.451416+02:00] errors_handler_middleware.ERROR: Parameter 'sex' is required and should be in request body  

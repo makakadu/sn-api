@@ -1,0 +1,3 @@
+[2022-01-02T00:22:46.110269+02:00] errors_handler_middleware.ERROR: Access to post is prohibited, post in trash  
+[2022-01-02T00:22:56.407171+02:00] errors_handler_middleware.ERROR: Cannot comment because it is softly deleted  
+[2022-01-02T00:23:47.386425+02:00] errors_handler_middleware.ERROR: Cannot comment because it is softly deleted  

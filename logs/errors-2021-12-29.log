@@ -1,0 +1,19 @@
+[2021-12-29T01:32:41.971804+02:00] errors_handler_middleware.ERROR: Parameters: 'password, repeatedPassword' are required and should be in request body  
+[2021-12-29T01:33:28.626567+02:00] errors_handler_middleware.ERROR: Parameter 'password' is required and should be in request body  
+[2021-12-29T13:58:57.356403+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-29T14:19:08.327324+02:00] errors_handler_middleware.ERROR: Неправильный эмейл или пароль  
+[2021-12-29T14:19:35.686730+02:00] errors_handler_middleware.ERROR: Неправильный эмейл или пароль  
+[2021-12-29T14:24:59.774283+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T14:29:13.565771+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T14:29:44.937315+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T14:30:01.592639+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T14:31:39.550099+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T14:38:44.409036+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T14:41:48.805321+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T14:49:13.761409+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T14:52:02.927337+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-29T15:32:09.170078+02:00] errors_handler_middleware.ERROR: fsdfs  
+[2021-12-29T19:11:59.335010+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-29T19:14:22.325745+02:00] errors_handler_middleware.ERROR: No rights  
+[2021-12-29T19:15:40.711039+02:00] errors_handler_middleware.ERROR: No rights  
+[2021-12-29T19:17:59.232527+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  

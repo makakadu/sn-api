@@ -1,0 +1,33 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Common\Shares\Shared" table="post_shares" inheritance-type="JOINED" >
+        <id name="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+
+        <field name="createdAt" column="created_at" type="datetime" />
+        <field name="originalCreatedAt" column="original_created_at" type="datetime" />
+        <field name="originalId" column="original_id" type="string" />
+        
+        <discriminator-column name="discr" type="string" />
+        
+        <discriminator-map>
+            <discriminator-mapping value="user_post" class="App\Domain\Model\Common\Shares\SharedUserPost" />  
+            <discriminator-mapping value="user_album_photo" class="App\Domain\Model\Common\Shares\SharedUserAlbumPhoto" />
+            <discriminator-mapping value="profile_picture" class="App\Domain\Model\Common\Shares\SharedProfilePicture" />
+            <discriminator-mapping value="user_video" class="App\Domain\Model\Common\Shares\SharedUserVideo" />
+<!--            <discriminator-mapping value="group_post" class="App\Domain\Model\Common\Shares\SharedGroupPost" />  
+            <discriminator-mapping value="group_album_photo" class="App\Domain\Model\Common\Shares\SharedGroupAlbumPhoto" />
+            <discriminator-mapping value="group_picture" class="App\Domain\Model\Common\Shares\SharedGroupPicture" />
+            <discriminator-mapping value="group_video" class="App\Domain\Model\Common\Shares\SharedGroupVideo" />
+            <discriminator-mapping value="page_post" class="App\Domain\Model\Common\Shares\SharedPagePost" />  
+            <discriminator-mapping value="page_albumphoto" class="App\Domain\Model\Common\Shares\SharedPageAlbumPhoto" />
+            <discriminator-mapping value="page_picture" class="App\Domain\Model\Common\Shares\SharedPagePicture" />
+            <discriminator-mapping value="page_video" class="App\Domain\Model\Common\Shares\SharedPageVideo" />-->
+        </discriminator-map>
+        
+    </entity>
+</doctrine-mapping>

@@ -1,0 +1,29 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Users\SavesCollection\SavesCollection" table="saves_collections" >
+        <id name="id" type="string"><generator strategy="NONE" /></id>
+
+        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="creator" inversed-by="savesCollections">
+            <join-column name="creator_id" referenced-column-name="id"/>
+        </many-to-one>
+        
+        <field name="deletedAt" column="deleted_at" type="datetime"  nullable="true" />
+        <field name="createdAt" column="created_at" type="datetime" />
+        <field name="name" type="string" />
+        <field name="description" type="string" nullable="true" />
+        
+        <one-to-many target-entity="App\Domain\Model\Users\SavesCollection\SavedItem" field="items" mapped-by="collection" index-by="id">
+            <cascade><cascade-persist/></cascade>
+        </one-to-many>
+        
+        <one-to-one field="whoCanSee" target-entity="App\Domain\Model\Users\SavesCollection\PrivacySettings" mapped-by="collection" >
+            <join-column name="who_can_see_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+    </entity>
+
+</doctrine-mapping>

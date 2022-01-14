@@ -1,0 +1,5 @@
+[2022-01-01T11:52:48.707629+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-01T11:52:51.940136+02:00] errors_handler_middleware.ERROR: User creator not found  
+[2022-01-01T11:53:06.622001+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-01-01T11:53:10.649556+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-01-01T13:02:32.309201+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  

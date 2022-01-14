@@ -1,0 +1,4 @@
+[2022-01-14T12:10:08.963223+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-01-14T13:30:16.387362+02:00] errors_handler_middleware.ERROR: Access to post is prohibited, post in trash  
+[2022-01-14T13:30:25.209925+02:00] errors_handler_middleware.ERROR: Cannot comment because it is softly deleted  
+[2022-01-14T13:30:34.450349+02:00] errors_handler_middleware.ERROR: Access to post is prohibited, post in trash  

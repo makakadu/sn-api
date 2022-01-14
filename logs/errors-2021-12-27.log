@@ -1,0 +1,6 @@
+[2021-12-27T18:03:26.828400+02:00] errors_handler_middleware.ERROR: Неправильный эмейл или пароль  
+[2021-12-27T18:16:09.853505+02:00] errors_handler_middleware.ERROR: Already subscribed  
+[2021-12-27T18:22:37.551108+02:00] errors_handler_middleware.ERROR: Subscription 01fqyatv2xjq3gneq73sm928gh not found  
+[2021-12-27T18:22:46.449878+02:00] errors_handler_middleware.ERROR: Already subscribed  
+[2021-12-27T18:53:39.741949+02:00] errors_handler_middleware.ERROR: Subscription 01fqecmjmgv29txa921bwhnzx2 not found  
+[2021-12-27T19:30:52.983562+02:00] errors_handler_middleware.ERROR: Неправильный эмейл или пароль  

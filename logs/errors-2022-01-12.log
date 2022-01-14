@@ -1,0 +1,10 @@
+[2022-01-12T10:45:07.784351+02:00] errors_handler_middleware.ERROR: File 'photo' should be passed  
+[2022-01-12T10:45:42.958511+02:00] errors_handler_middleware.ERROR: Parameters: 'x, y, width' are required and should be in request body  
+[2022-01-12T13:00:29.567789+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-12T13:01:11.685104+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-01-12T13:01:16.155365+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-01-12T13:32:36.663210+02:00] errors_handler_middleware.ERROR: Profile picture 01fs70z98cm7p5nwdym64vkn7e not found  
+[2022-01-12T13:33:20.800158+02:00] errors_handler_middleware.ERROR: Profile picture 01fs710ms4z0v1fczadfyq6kh1 not found  
+[2022-01-12T13:39:38.216384+02:00] errors_handler_middleware.ERROR: Profile picture 01fs71c5vf2wjxn7kgt7c339fn not found  
+[2022-01-12T17:04:14.421599+02:00] errors_handler_middleware.ERROR: File 'photo' should be passed  
+[2022-01-12T17:04:48.726899+02:00] errors_handler_middleware.ERROR: File 'photo' should be passed  

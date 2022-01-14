@@ -1,0 +1,66 @@
+[2021-12-30T10:16:11.998795+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-30T10:16:35.251723+02:00] errors_handler_middleware.ERROR: No rights  
+[2021-12-30T10:44:01.876344+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T10:53:36.036736+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T10:53:37.228703+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T11:08:52.278415+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T11:08:53.685060+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T11:54:52.962061+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T11:54:54.556746+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T11:58:31.495036+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T12:01:18.824682+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T12:01:27.079154+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T12:02:05.419493+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2021-12-30T12:02:33.472162+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-30T12:28:54.481692+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-30T12:28:59.610801+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-30T12:29:38.159535+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-30T12:43:25.059838+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:43:41.920149+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:43:42.221531+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:43:42.591064+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:48:14.656804+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:48:14.990766+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:48:15.357831+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:51:16.529230+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:51:16.810158+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:51:17.261368+02:00] errors_handler_middleware.ERROR: User fsdf not found  
+[2021-12-30T12:59:55.869392+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2021-12-30T13:00:35.247360+02:00] errors_handler_middleware.ERROR: User jkjkj not found  
+[2021-12-30T13:02:06.501253+02:00] errors_handler_middleware.ERROR: User jkjkj not found  
+[2021-12-30T13:02:13.667596+02:00] errors_handler_middleware.ERROR: User jkjkj not found  
+[2021-12-30T13:04:04.616332+02:00] errors_handler_middleware.ERROR: User jkjkj not found  
+[2021-12-30T13:04:08.990992+02:00] errors_handler_middleware.ERROR: User jkjkj not found  
+[2021-12-30T13:25:34.300480+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:26:02.788546+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:26:43.536935+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:27:05.281319+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:27:30.913676+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:27:35.693061+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:27:45.998928+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:27:46.350446+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:27:46.740231+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:32:30.978176+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:32:31.269818+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:32:31.663480+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:41:35.215954+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:42:15.680916+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:43:00.824876+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:43:42.563204+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:44:43.995807+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:45:14.872390+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:45:57.164618+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:46:50.870863+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:47:19.423667+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:49:57.696659+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:50:03.372151+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:51:18.609659+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:55:42.408023+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T13:55:51.650473+02:00] errors_handler_middleware.ERROR: User gdfgdfg not found  
+[2021-12-30T14:00:06.702408+02:00] errors_handler_middleware.ERROR: User fdsfsdf not found  
+[2021-12-30T14:23:26.706020+02:00] errors_handler_middleware.ERROR: User gfgd not found  
+[2021-12-30T14:23:27.082667+02:00] errors_handler_middleware.ERROR: User gfgd not found  
+[2021-12-30T14:27:32.669945+02:00] errors_handler_middleware.ERROR: User gfgd not found  
+[2021-12-30T14:27:32.996214+02:00] errors_handler_middleware.ERROR: User gfgd not found  
+[2021-12-30T14:28:20.838441+02:00] errors_handler_middleware.ERROR: User gfgd not found  
+[2021-12-30T14:28:29.798786+02:00] errors_handler_middleware.ERROR: User gfgd not found  

@@ -1,0 +1,133 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Users\User\User" table="users"> 
+        <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_unicode_ci</option>
+        </options>
+               
+        <!--id name="id" column="id" type="UserId" /-->
+        <id name="id" type="string">
+            <generator strategy="NONE" />
+        </id>
+        
+        <field name="version" type="integer" version="true" />
+
+        <unique-constraints>
+            <unique-constraint columns="email" name="unique_email" />
+        </unique-constraints>
+        
+        <field name="email" column="email" type="string" length="40" />
+        <field name="firstName" column="first_name" type="string" length="30" />
+        <field name="lastName" column="last_name" type="string" length="30" />
+        <field name="gender" column="gender" type="string" length="6" />
+        <field name="birthday" column="birthday" type="datetime" />
+        <field name="roles" column="roles" type="array" />
+        <field name="info" column="info" type="string" length="300" nullable="true" />
+        <!--field name="country" column="country" type="string" nullable="true" />
+        <field name="city" column="city" type="string" nullable="true" />
+        <field name="status" type="string" length="300" /-->
+
+        <field name="isDeleted" column="is_deleted" type="boolean" />
+        <field name="isSuspended" column="is_suspended" type="boolean" />
+        <field name="isDisabled" column="is_disabled" type="boolean" />
+        <field name="isBlocked" column="is_blocked" type="boolean" />
+        <!--field name="isOnline" column="is_online" type="boolean" /-->
+        <field name="isActivated" column="is_activated" type="boolean" />
+
+        <!--field name="friendLists" column="friend_lists" type="array" /-->
+        <!--field name="hiddenFriends" column="hidden_friends" type="array" /-->
+        <!--field name="banned" type="array" /-->
+        
+        <embedded name="username" class="App\Domain\Model\Users\User\Username" />
+        <embedded name="password" class="App\Domain\Model\Users\Password" />
+
+        <one-to-many target-entity="App\Domain\Model\Users\ConnectionsList\ConnectionsList" field="connectionsLists" mapped-by="user" index-by="id" >
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+        <one-to-many target-entity="App\Domain\Model\Users\Post\Post" field="posts" mapped-by="creator" index-by="id" >
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+
+        <one-to-many field="albums" target-entity="App\Domain\Model\Users\Albums\Album" mapped-by="user" index-by="id" >
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+        <one-to-many field="savesCollections" target-entity="App\Domain\Model\Users\SavesCollection\SavesCollection" mapped-by="creator" index-by="id" >
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+        <one-to-many field="videoPlaylists" target-entity="App\Domain\Model\Users\VideoPlaylist\VideoPlaylist" mapped-by="user" index-by="id" >
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+        <one-to-many target-entity="App\Domain\Model\Users\Photos\ProfilePicture\ProfilePicture" field="pictures" mapped-by="user" index-by="id">
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+        <one-to-many target-entity="App\Domain\Model\Users\Photos\Cover\Cover" field="covers" mapped-by="user" index-by="id">
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+        <one-to-many target-entity="App\Domain\Model\Users\Ban\Ban" field="bans" mapped-by="owner" index-by="id">
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+
+        <one-to-one target-entity="App\Domain\Model\Users\User\ProfilePrivacySettings" field="privacy" mapped-by="user" >
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+
+        <one-to-one target-entity="App\Domain\Model\Users\User\Settings" field="settings" mapped-by="user" >
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+
+        <!--many-to-many field="savedPhotos" target-entity="App\Domain\Model\Photos\Photo\Photo">
+            <join-table name="user_saved_photos">
+                <join-columns>
+                    <join-column name="user_id" referenced-column-name="id" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="saved_photo_id" referenced-column-name="id" unique="true" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+        
+        <many-to-many field="wallPhotos" target-entity="App\Domain\Model\Photos\Photo\Photo">
+            <join-table name="user_wall_photos">
+                <join-columns>
+                    <join-column name="user_id" referenced-column-name="id" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="wall_photo_id" referenced-column-name="id" unique="true" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+        
+        <many-to-many field="profilePhotos" target-entity="App\Domain\Model\Photos\ProfilePhoto\ProfilePhoto">
+            <join-table name="user_profile_photos">
+                <join-columns>
+                    <join-column name="user_id" referenced-column-name="id" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="profile_photo_id" referenced-column-name="id" unique="true" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+        
+        <many-to-many field="tempPhotos" target-entity="App\Domain\Model\Photos\Photo\Photo">
+            <join-table name="user_temp_photos">
+                <join-columns>
+                    <join-column name="user_id" referenced-column-name="id" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="temp_photo_id" referenced-column-name="id" unique="true" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many-->
+
+    </entity>
+</doctrine-mapping>

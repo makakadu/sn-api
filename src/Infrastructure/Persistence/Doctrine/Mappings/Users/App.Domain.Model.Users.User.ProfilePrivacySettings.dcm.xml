@@ -1,0 +1,90 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Users\User\ProfilePrivacySettings" table="profile_privacy_settings">
+        <id name="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+        
+        <field name="isHidden" column="is_hidden" type="boolean" />
+        <!--field name="isClosed" column="is_closed" type="boolean" /-->
+        
+        <one-to-many field="complexSettings" target-entity="App\Domain\Model\Users\User\ProfileComplexPrivacySetting" mapped-by="container" index-by="name" >
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+        <one-to-one target-entity="App\Domain\Model\Users\User\User" field="user" inversed-by="privacy" />
+        
+        <!--one-to-one field="whoCanStartDialog" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoCanInviteToGroup" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_invite_to_group_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoCanOfferFriendship" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoCanTagOnPhoto" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoCanCommentPosts" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoSeeInfo" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoSeeAudio" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoSeeVideos" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoSeeTaggedPhotos" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoSeeGroupsList" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one>
+        
+        <one-to-one field="whoSeeHiddenFriends" target-entity="App\Domain\Model\Users\User\PrivacySetting">
+            <join-column name="who_can_start_dialog_id" referenced-column-name="id" />
+            <cascade><cascade-all/></cascade>
+        </one-to-one-->
+
+        <!--field name="whoCanStartDialog" column="sd" type="array"/>
+        <field name="whoCanInviteToGroup" column="itg" type="array"/>
+        <field name="whoCanOfferFriendship" column="ofr" type="array"/>
+        <field name="whoCanTagOnPhoto" column="toph" type="array"/>
+        <field name="whoCanCommentPosts" column="cmp" type="array"/>
+        <field name="whoSeeInfo" column="si" type="array"/>
+        <field name="whoSeeAudio" column="sa" type="array"/>
+        <field name="whoSeeVideos" column="sv" type="array"/>
+        <field name="whoSeeTaggedPhotos" column="stp" type="array"/>
+        <field name="whoSeeGroupsList" column="gl" type="array"/>
+        <field name="whoSeeHiddenFriends" column="hf" type="array"/ -->
+
+        
+
+    </entity>
+</doctrine-mapping>

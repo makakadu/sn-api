@@ -1,0 +1,63 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Users\User\ProfileComplexPrivacySetting" table="profile_complex_privacy_setting">
+        <id name="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+        
+        <field name="accessLevel" column="access_level" type="integer" />
+       
+        <field name="supportedLevels" column="supported_levels" type="array" />
+        
+        <field name="name" type="string" />
+        
+        <many-to-one field="container" target-entity="App\Domain\Model\Users\User\ProfilePrivacySettings"  inversed-by="complexSettings" />
+        
+        <many-to-many target-entity="App\Domain\Model\Users\Connection\Connection" field="allowedConnections" index-by="id" >
+            <join-table name="psaf" >
+                <join-columns>
+                    <join-column name="setting_id" referenced-column-name="id" on-delete="cascade" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="connection_id" referenced-column-name="id" on-delete="cascade" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+        
+        <many-to-many target-entity="App\Domain\Model\Users\Connection\Connection" field="unallowedConnections" index-by="id" >
+            <join-table name="psuf" >
+                <join-columns>
+                    <join-column name="setting_id" referenced-column-name="id" on-delete="cascade" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="connection_id" referenced-column-name="id" on-delete="cascade" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+        
+        <many-to-many target-entity="App\Domain\Model\Users\ConnectionsList\ConnectionsList" field="allowedLists" index-by="id" >
+            <join-table name="psal" >
+                <join-columns>
+                    <join-column name="setting_id" referenced-column-name="id" on-delete="cascade" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="list_id" referenced-column-name="id" on-delete="cascade" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+        
+        <many-to-many target-entity="App\Domain\Model\Users\ConnectionsList\ConnectionsList" field="unallowedLists" index-by="id" >
+            <join-table name="psul" >
+                <join-columns>
+                    <join-column name="setting_id" referenced-column-name="id" on-delete="cascade" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="list_id" referenced-column-name="id" on-delete="cascade" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+    </entity>
+</doctrine-mapping>

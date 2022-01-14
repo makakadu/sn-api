@@ -1,0 +1,9 @@
+# PHP
+/vendor
+
+# Vercel
+.vercel
+
+# ENV
+.env
+/nbproject/private/

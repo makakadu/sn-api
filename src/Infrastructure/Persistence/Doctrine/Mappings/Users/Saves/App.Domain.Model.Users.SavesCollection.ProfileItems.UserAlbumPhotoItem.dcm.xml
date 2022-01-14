@@ -1,0 +1,16 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Users\SavesCollection\ProfileItems\UserAlbumPhotoItem" table="user_album_photo_items" >
+        
+        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="creator" nullable="true" >
+            <join-column name="creator_id" referenced-column-name="id" on-delete="SET NULL" />
+        </many-to-one>
+        <one-to-one target-entity="App\Domain\Model\Users\Photos\AlbumPhoto\AlbumPhoto" field="photo" nullable="true" >
+            <join-column name="photo_id" referenced-column-name="id" on-delete="SET NULL" />
+        </one-to-one>
+        
+    </entity>
+</doctrine-mapping>

@@ -1,0 +1,32 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Users\Photos\AlbumPhoto\AlbumPhoto" table="user_album_photos">
+
+        
+        <field name="inAlbumId" column="in_album_id" type="string" nullable="true"/> <!-- Для порядка по времени добавления в альбом -->
+        <field name="addedToAlbumAt" column="added_to_album_at" type="datetime" nullable="true" />
+        
+        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="creator" />
+
+        <many-to-one
+            target-entity="App\Domain\Model\Users\Albums\Album"
+            field="album"
+            inversed-by="photos"
+            nullable="true"
+        />
+        
+        <one-to-many
+            target-entity="App\Domain\Model\Users\Photos\AlbumPhoto\Comment\Comment"
+            field="comments"
+            mapped-by="commented"
+            index-by="id"
+        >
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+    </entity>
+
+</doctrine-mapping>

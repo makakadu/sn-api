@@ -1,0 +1,42 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Users\SavesCollection\SavedItem" table="saves_collection_items" inheritance-type="JOINED" >
+        <id name="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+        
+        <many-to-one
+            target-entity="App\Domain\Model\Users\SavesCollection\SavesCollection"
+            field="collection"
+            inversed-by="items"
+        />
+        
+        <field name="createdAt" column="created_at" type="datetime" />
+        <field name="originalId" column="original_id" type="string" />
+        <field name="type" type="string" />
+        
+        <discriminator-column name="discr" type="string" />
+        
+        <discriminator-map>
+            <discriminator-mapping value="user_post" class="App\Domain\Model\Users\SavesCollection\ProfileItems\UserPostItem" />  
+            <discriminator-mapping value="user_album_photo" class="App\Domain\Model\Users\SavesCollection\ProfileItems\UserAlbumPhotoItem" />
+            <discriminator-mapping value="profile_picture" class="App\Domain\Model\Users\SavesCollection\ProfileItems\ProfilePictureItem" />
+            <discriminator-mapping value="user_video" class="App\Domain\Model\Users\SavesCollection\ProfileItems\UserVideoItem" />
+            
+            <discriminator-mapping value="group_post" class="App\Domain\Model\Users\SavesCollection\GroupItems\GroupPostItem" />  
+            <discriminator-mapping value="group_album_photo" class="App\Domain\Model\Users\SavesCollection\GroupItems\GroupAlbumPhotoItem" />
+            <discriminator-mapping value="group_picture" class="App\Domain\Model\Users\SavesCollection\GroupItems\GroupPictureItem" />
+            <discriminator-mapping value="group_video" class="App\Domain\Model\Users\SavesCollection\GroupItems\GroupVideoItem" />
+            
+            <discriminator-mapping value="page_post" class="App\Domain\Model\Users\SavesCollection\PageItems\PagePostItem" />  
+            <discriminator-mapping value="page_albumphoto" class="App\Domain\Model\Users\SavesCollection\PageItems\PageAlbumPhotoItem" />
+            <discriminator-mapping value="page_picture" class="App\Domain\Model\Users\SavesCollection\PageItems\PagePictureItem" />
+            <discriminator-mapping value="page_video" class="App\Domain\Model\Users\SavesCollection\PageItems\PageVideoItem" />
+        </discriminator-map>
+        
+    </entity>
+
+</doctrine-mapping>

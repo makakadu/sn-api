@@ -1,0 +1,1 @@
+[2021-12-26T19:52:33.018842+02:00] server_errors_handler_middleware.ERROR: (other) Undefined index: HTTP_ORIGIN on line 4 in file /media/aleksey/F0BE6575B0AF464D/Misc/Programming/socialnetwork/social-network-back/public/index.php. (error type: 8)  
