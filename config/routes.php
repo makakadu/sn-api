@@ -28,7 +28,7 @@ use App\Controller\ChatsController;
 
 return function (App $app) {
     
-    $app->group('/api', function (Group $group) {
+    $app->group('/v1', function (Group $group) {
         $group->get('/', function (Request $request, Response $response, $args) {
             $response->getBody()->write("Root");
             return $response;
