@@ -391,52 +391,52 @@ return [
 */
         return $entityManager;
     },
-            
-    \Doctrine\DBAL\Sharding\ShardManager::class => function(ContainerInterface $c) {
-        
-        function getConnection() {
-            return \Doctrine\DBAL\DriverManager::getConnection([
-                 'wrapperClass' => \Doctrine\DBAL\Sharding\PoolingShardConnection::class,
-                 'driver'       => 'pdo_mysql',
-                 'global'       => [
-                    'driver'   => 'pdo_mysql',
-                    'user' => $_ENV['mysql_user'],
-                    'password' => $_ENV['mysql_password'],
-                    'dbname'   => 'global',
-                    'host'     => '127.0.0.1'
-                 ],
-                'shards' => [
-                    [
-                        'id'	   => 1,
-                        'driver'   => 'pdo_mysql',
-                        'user' => $_ENV['mysql_user'],
-                        'password' => $_ENV['mysql_password'],
-                        'dbname'   => 'shard1',
-                        'host'     => '127.0.0.1'
-                     ],
-                    [
-                        'id'	   => 2,
-                        'driver'   => 'pdo_mysql',
-                        'user' => $_ENV['mysql_user'],
-                        'password' => $_ENV['mysql_password'],
-                        'dbname'   => 'shard2',
-                        'host'     => '127.0.0.1'
-                    ],
-                 ],
-                 'shardChoser' => "\App\Sharding\SqlShardChoser",
-             ]);
-        }
-
-        $conn = getConnection();
-        $globalConn = getConnection();
-
-        $manager = new \App\Sharding\SqlShardManager($conn, $globalConn, [
-            'global' => Setup::createXMLMetadataConfiguration([PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings/'], true),
-            'shards' => Setup::createXMLMetadataConfiguration([PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings/'], true)
-        ]);
-
-        return $manager;
-    },
+//            
+//    \Doctrine\DBAL\Sharding\ShardManager::class => function(ContainerInterface $c) {
+//        
+//        function getConnection() {
+//            return \Doctrine\DBAL\DriverManager::getConnection([
+//                 'wrapperClass' => \Doctrine\DBAL\Sharding\PoolingShardConnection::class,
+//                 'driver'       => 'pdo_mysql',
+//                 'global'       => [
+//                    'driver'   => 'pdo_mysql',
+//                    'user' => $_ENV['mysql_user'],
+//                    'password' => $_ENV['mysql_password'],
+//                    'dbname'   => 'global',
+//                    'host'     => '127.0.0.1'
+//                 ],
+//                'shards' => [
+//                    [
+//                        'id'	   => 1,
+//                        'driver'   => 'pdo_mysql',
+//                        'user' => $_ENV['mysql_user'],
+//                        'password' => $_ENV['mysql_password'],
+//                        'dbname'   => 'shard1',
+//                        'host'     => '127.0.0.1'
+//                     ],
+//                    [
+//                        'id'	   => 2,
+//                        'driver'   => 'pdo_mysql',
+//                        'user' => $_ENV['mysql_user'],
+//                        'password' => $_ENV['mysql_password'],
+//                        'dbname'   => 'shard2',
+//                        'host'     => '127.0.0.1'
+//                    ],
+//                 ],
+//                 'shardChoser' => "\App\Sharding\SqlShardChoser",
+//             ]);
+//        }
+//
+//        $conn = getConnection();
+//        $globalConn = getConnection();
+//
+//        $manager = new \App\Sharding\SqlShardManager($conn, $globalConn, [
+//            'global' => Setup::createXMLMetadataConfiguration([PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings/'], true),
+//            'shards' => Setup::createXMLMetadataConfiguration([PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings/'], true)
+//        ]);
+//
+//        return $manager;
+//    },
 
     'DoctrineXMLMetadataConfiguration' => function(ContainerInterface $c) {
         $config = Setup::createXMLMetadataConfiguration(
