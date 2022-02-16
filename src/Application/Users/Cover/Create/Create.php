@@ -19,6 +19,7 @@ class Create extends \App\Application\Users\Cover\CoverAppService {
             $versions = $this->photoService->createCoverVersionsFromUploaded(
                 $request->uploadedPhoto, (int)$request->x, (int)$request->y, (float)$request->width
             );
+            
             $cover = $requester->createCover($versions);
             $this->covers->flush();
             return new CreateResponse($cover->id());

@@ -8,8 +8,7 @@
         <field name="updatedAt" column="updated_at" type="datetime" />
 
         <field name="croppedSmall" column="cropped_small" type="string" />
-        <field name="croppedMedium" column="cropped_medium" type="string" />
-        <field name="croppedLarge" column="cropped_large" type="string" />
+        <field name="croppedOriginal" column="cropped_original" type="string" />
         
         <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user" inversed-by="pictures" />
 

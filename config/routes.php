@@ -24,6 +24,7 @@ use App\Controller\UserSubscriptionsController;
 use App\Controller\CommonController;
 use App\Controller\PageController;
 use App\Controller\PagePostsController;
+use App\Controller\ChatsController;
 
 return function (App $app) {
     
@@ -58,7 +59,7 @@ return function (App $app) {
             $group->get("/{id}/albums", UserAlbumsController::class.':getAlbums');
             $group->get("/{id}/albums/{albumId}", UserAlbumsController::class.':removeAlbum');
             //$group->patch("/{id}", UserController::class.":changeProperty2");
-            $group->patch("/{id}", "$userController:updateUser");
+            $group->patch("/{id}", "$userController:patchUser");
             $group->get("/{id}/{propertyName:$propExp}", "$userController:getProperty");
             $changeSettingExp = 'language|themeIsDark';
             $group->patch("/{id}/{setting:$changeSettingExp}", SettingsController::class . ":changeSetting");
@@ -69,7 +70,26 @@ return function (App $app) {
             $group->get("/{userId}/contacts", UserController::class . ':getContacts');//->add(JwtAuthMiddleware::class);
             $group->get("/{userId}/subscriptions", UserSubscriptionsController::class . ':getPart');
             $group->get("/{userId}/subscribers", UserSubscriptionsController::class . ':getSubscribersPart');
-        });    
+            $group->get('/{id}/chats', ChatsController::class . ":getPart");
+        });   
+        
+        $group->group('/chats', function (Group $group) {
+            $group->post('', ChatsController::class . ":create");
+            $group->post('/{id}/messages', ChatsController::class . ":createMessage");
+            $group->get('/{id}', ChatsController::class . ":get");
+            $group->get('/{id}/messages', ChatsController::class . ":getMessagesPart");
+            $group->patch('/{id}', ChatsController::class . ":patch");
+            $group->delete('/{id}/messages/{messageId}', ChatsController::class . ":deleteMessage");
+//            $group->patch('/{id}', UserController::class . ":updateBan");
+        });
+        
+        $group->group('/messages', function (Group $group) {
+            $group->get('/{id}', ChatsController::class.':getMessage');
+            $changePropExp = 'isRead|text';
+            $group->put("/{messageId}/{propertyName:$changePropExp}", MessagesController::class.':changeMessage');
+            $group->delete('/{messageId}', MessagesController::class.':removeMessage');
+            $group->patch('/{id}', ChatsController::class.':patchMessage');
+        });
 
         $group->group('/user-bans', function (Group $group) {
             $group->post('', UserController::class . ":createBan");
@@ -202,13 +222,7 @@ return function (App $app) {
             //$group->get('/{dialogueId}/messages-histories/{historyId}/messages', DialoguesController::class.':getHistoryMessages');
         });
 
-        $group->group('/messages', function (Group $group) {
-            $group->get('/{messageId}', MessagesController::class.':getMessage');
-            $changePropExp = 'isRead|text';
-            $group->put("/{messageId}/{propertyName:$changePropExp}", MessagesController::class.':changeMessage');
-            $group->delete('/{messageId}', MessagesController::class.':removeMessage');
-            $group->patch('/{messageId}', MessagesController::class.':updateMessage');
-        });
+
 
         $group->group('/messages-histories', function (Group $group) {
             //$group->get('/{historyId}', DialoguesController::class.':getMessage');

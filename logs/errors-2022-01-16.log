@@ -1,0 +1,9 @@
+[2022-01-16T20:47:40.804297+02:00] errors_handler_middleware.ERROR: Call to undefined function imagecreatefromjpeg()  
+[2022-01-16T20:47:41.245098+02:00] errors_handler_middleware.ERROR: Call to undefined function imagecreatefromjpeg()  
+[2022-01-16T20:47:41.664640+02:00] errors_handler_middleware.ERROR: Call to undefined function imagecreatefromjpeg()  
+[2022-01-16T20:47:41.976720+02:00] errors_handler_middleware.ERROR: Call to undefined function imagecreatefromjpeg()  
+[2022-01-16T20:50:06.051115+02:00] errors_handler_middleware.ERROR: Call to undefined function imagecreatefromjpeg()  
+[2022-01-16T20:50:06.407790+02:00] errors_handler_middleware.ERROR: Call to undefined function imagecreatefromjpeg()  
+[2022-01-16T23:29:02.253585+02:00] errors_handler_middleware.ERROR: Call to undefined function imagecreatefromjpeg()  
+[2022-01-16T23:29:20.582748+02:00] errors_handler_middleware.ERROR: Call to undefined function imagecreatefromjpeg()  
+[2022-01-16T23:59:11.518556+02:00] errors_handler_middleware.ERROR: Cannot create connection with himself  

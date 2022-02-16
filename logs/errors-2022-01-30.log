@@ -1,0 +1,12 @@
+[2022-01-30T00:03:20.056094+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-30T10:39:58.884700+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-01-30T12:51:29.301446+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-30T12:54:18.336044+02:00] errors_handler_middleware.ERROR: Invalid chat type  
+[2022-01-30T12:55:06.357859+02:00] errors_handler_middleware.ERROR: Participant dfsfsdfsdf not found  
+[2022-01-30T12:55:31.511398+02:00] errors_handler_middleware.ERROR: Participant 'dfsfsdfsdf' not found  
+[2022-01-30T13:47:44.405517+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-30T14:25:23.951772+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-30T17:41:28.575085+02:00] errors_handler_middleware.ERROR: Participant 'participants' not found  
+[2022-01-30T17:44:53.479785+02:00] errors_handler_middleware.ERROR: Participant participants not found  
+[2022-01-30T17:48:21.305963+02:00] errors_handler_middleware.ERROR: Parameter 'front_key' is required and should be in request body  
+[2022-01-30T17:49:09.257423+02:00] errors_handler_middleware.ERROR: Parameter 'front_key' is required and should be in request body  

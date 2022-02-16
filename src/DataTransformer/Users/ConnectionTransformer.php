@@ -14,7 +14,8 @@ class ConnectionTransformer extends Transformer {
             $connection->id(),
             $this->userToSmallDTO($connection->getUser1()),
             $this->userToSmallDTO($connection->getUser2()),
-            $connection->isAccepted()
+            $connection->isAccepted(),
+            $this->creationTimeToTimestamp($connection->createdAt())
         );
     }
     

@@ -5,10 +5,8 @@
 
     <entity name="App\Domain\Model\Users\Post\Photo\Photo" table="user_post_photos">
         
-        <field name="extraSmall" column="extra_small" type="array" />
         <field name="small" type="array" />
         <field name="medium" type="array" />
-        <field name="large" type="array" />
         <field name="original" type="array" />
         
     </entity>

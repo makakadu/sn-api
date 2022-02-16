@@ -12,12 +12,14 @@ class ConnectionDTO implements \App\DTO\Common\DTO {
     public bool $isAccepted;
     public UserSmallDTO $initiator;
     public UserSmallDTO $target;
+    public int $createdAt;
 
-    public function __construct(string $id, UserSmallDTO $initiator, UserSmallDTO $target, bool $is_accepted) {
+    public function __construct(string $id, UserSmallDTO $initiator, UserSmallDTO $target, bool $is_accepted, int $createdAt) {
         $this->id = $id;
         $this->initiator = $initiator;
         $this->target = $target;
         $this->isAccepted = $is_accepted;
+        $this->createdAt = $createdAt;
     }
 
 }

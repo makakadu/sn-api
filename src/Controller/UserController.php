@@ -21,6 +21,7 @@ use App\Application\Users\GetUser\GetUserRequest;
 use App\Application\Users\CommentPhotos\Get\GetRequest as GetCommentPhotoRequest;
 use App\Application\Users\GetContacts\GetContactsRequest;
 use App\Application\Users\Search\SearchRequest;
+use App\Application\Users\PatchUser\PatchUserRequest;
 
 class UserController extends AbstractController {
     /**
@@ -122,11 +123,12 @@ class UserController extends AbstractController {
 //     * @var \App\Application\GetUserAvatar\GetUserAvatar
 //     */
 //    private $getAvatar;
-//    /**
-//     * @Inject
-//     * @var \App\Application\UpdateUser\UpdateUser
-//     */
-//    private $updateUser;
+    
+    /**
+     * @Inject
+     * @var \App\Application\Users\PatchUser\PatchUser
+     */
+    private $patchUser;
 //    /**
 //     * @Inject
 //     * @var \App\Application\ChangeAvatar\ChangeAvatar
@@ -360,6 +362,20 @@ class UserController extends AbstractController {
         $responseDTO = $useCase->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO);
     }
+    
+    function patchUser(Request $request, Response $response) {
+        $userId = $request->getAttribute('id');
+        $requesterId = $request->getAttribute('token')['data']->userId;
+
+        $payload = $request->getParsedBody();
+        $requestDTO = new PatchUserRequest($requesterId, $userId, $payload);
+        
+        $useCase = new TransactionalApplicationService(
+            $this->patchUser, $this->transactionalSession
+        );
+        $responseDTO = $useCase->execute($requestDTO);
+        return $this->prepareResponse($response, $responseDTO);
+    }
 
 //    function createKek(Request $request, Response $response) {
 //        
@@ -420,15 +436,7 @@ class UserController extends AbstractController {
 //        return $this->prepareResponse($response, $responseDTO);
 //    }
 //
-//    function updateUser(Request $request, Response $response) {
-//        $requesteeId = $request->getAttribute('id');
-//        $requesterId = $request->getAttribute('token')['data']->userId;
-//
-//        $payload = $request->getParsedBody();
-//        $requestDTO = new UpdateUserRequest($requesterId, $requesteeId, $payload);
-//        $responseDTO = $this->updateUser->execute($requestDTO);
-//        return $this->respondWithJSON($response, $responseDTO);
-//    }
+
 //    
 //    function addAlbumToUser(Request $request, Response $response) {
 //        $userId = $request->getAttribute('id');

@@ -28,6 +28,7 @@ use App\Domain\Model\Users\Photos\ProfilePicture\ProfilePicture;
 use App\Domain\Model\Users\Photos\AlbumPhoto\AlbumPhoto;
 use App\Domain\Model\Pages\Page\Page;
 use App\Domain\Model\Users\Photos\Cover\Cover;
+use App\Domain\Model\Chats\Chat;
 
 class User {
     use UserMainInfo;
@@ -55,7 +56,8 @@ class User {
     private bool $isModer = false;
     
     private Username $username;
-    private ?DateTime $deletedAt = null;   
+    private ?DateTime $deletedAt = null;
+    private DateTime $lastRequestsCheck;
     private ProfilePrivacySettings $privacy;
     private Settings $settings;
     
@@ -129,9 +131,23 @@ class User {
         $this->settings = new Settings($language, $this);
         
         $this->isActivated = true;
-        $this->createdAt = new DateTime('now');
+        $this->createdAt = new \DateTime('now');
+        $this->lastRequestsCheck = new \DateTime('now');
     }
     
+    function createChat(array $participants, string $type, ?string $text, string $frontKey): Chat {
+        $chat = new Chat($this, $participants, $type, $text, $frontKey);
+        return $chat;
+    }
+    
+    public function lastRequestsCheck(): \DateTime {
+        return $this->lastRequestsCheck;
+    }
+    
+    function checkRequests(): void {
+//        print_r(new \DateTime('now'));exit();
+        $this->lastRequestsCheck = new \DateTime('now');
+    }
 //    function subscriptions(): Collection {
     
     function pictures(): Collection {

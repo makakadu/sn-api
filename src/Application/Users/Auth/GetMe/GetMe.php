@@ -19,8 +19,11 @@ class GetMe implements \App\Application\ApplicationService {
         return new GetMeResponse(
             $requester->id(),
             (string)$requester->username(),
+            $requester->firstName(),
+            $requester->lastName(),
             $requester->email(),
-            $requester->currentPicture() ? $requester->currentPicture()->versions()['cropped_medium'] : null
+            $requester->currentPicture() ? $requester->currentPicture()->versions()['cropped_original'] : null,
+            $requester->lastRequestsCheck()->getTimestamp() * 1000
         );
     }
 

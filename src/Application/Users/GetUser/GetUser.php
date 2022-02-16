@@ -35,9 +35,9 @@ class GetUser implements \App\Application\ApplicationService {
             ? $this->findRequesterOrFail($request->requesterId) : null;
         $user = $this->findUserOrFail($request->requestedUserId, true, null);
         
-        $connections = $this->connections->getWithUser($user, null, 6, false, true, null);
+        $connections = $this->connections->getWithUser($user, null, 6, false, true, null, null);
         $acceptedConnsDTOs = $this->connsTrans->transformMultiple($connections);
-        $allAcceptedConnsCount = $this->connections->getCountWithUser($user, false, true, null);
+        $allAcceptedConnsCount = $this->connections->getCountWithUser($user, false, true, null, null);
 
         $subscriptions = $this->users->getUserSubscriptions($user, null, 6);
         $subscriptionsDTOs = $this->transformer->transformMultipleToSubscriberDTO($subscriptions);

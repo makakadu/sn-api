@@ -49,44 +49,97 @@ class UserDoctrineRepository extends AbstractDoctrineRepository implements UserR
     }
     
     function search(User $requester, string $text, ?string $cursor, int $count) {
-
-        $exploded = \explode(' ', $text);
-        if(\count($exploded) > 1) {
-            $firstWord = $exploded[0];
-            $secondWord = $exploded[1];
-            
-            $qb = $this->entityManager->createQueryBuilder();
-            $qb->select('u')
-                ->from(User::class, 'u')
-                ->where("u.firstName LIKE '%{$firstWord}%' AND u.lastName LIKE '%{$secondWord}%'")
-                ->orWhere("u.firstName LIKE '%{$secondWord}%' AND u.lastName LIKE '%{$firstWord}%'")
-                ->andWhere("u.id != '{$requester->id()}'");
-            if($cursor) {
-                $qb->andWhere("u.id >= '{$cursor}'");
-            }
-            return $qb->setMaxResults($count)
-                ->getQuery()
-                //->useQueryCache(true)
-                //->setResultCacheId('kek')
-                //->useResultCache(true, 3600, 'kek')
-                ->getResult();
-        } else {            
-            $qb = $this->entityManager->createQueryBuilder();
-            $qb
-                ->select('u')
-                ->from(User::class, 'u')
-                ->where("u.firstName LIKE '%{$text}%'")
-                ->orWhere("u.lastName LIKE '%{$text}%'")
-                ->andWhere("u.id != '{$requester->id()}'");
-            if($cursor) {
-                $qb->andWhere("u.id >= '{$cursor}'");
-            }
-            
-            $query = $qb->setMaxResults($count)
-                ->getQuery();
-            
-            return $query->getResult();
+        
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('u')
+           ->from(User::class, 'u');
+        if($cursor) {
+            $qb->where('u.id >= :cursor')
+               ->setParameter('cursor', $cursor);
         }
+        $result = $qb->getQuery()
+           ->getResult();
+        
+        $trimmedText = trim($text);
+        
+        $textLower = mb_strtolower($trimmedText);
+        $exploded = \explode(' ', $textLower);
+
+        $found = [];
+        
+        if($textLower === '') {
+            $found = array_slice($result, 0, $count);
+        }
+        elseif(\count($exploded) > 1) {
+            foreach($result as $item) {
+                $firstWord = $exploded[0];
+                $secondWord = $exploded[1];
+
+                $firstName = mb_strtolower($item->firstName());
+                $lastName = mb_strtolower($item->lastName());
+                if((stripos($firstName, $firstWord) !== false) && (stripos($lastName, $secondWord) !== false)) {
+                    $found[] = $item;
+                } elseif((stripos($firstName, $secondWord) !== false) && (stripos($lastName, $firstWord)) !== false) {
+                    $found[] = $item;
+                }
+                
+                if(\count($found) === $count) {
+                    break;
+                }
+            } 
+        } else {
+            foreach($result as $item) {
+                $firstName = mb_strtolower($item->firstName());
+                $lastName = mb_strtolower($item->lastName());
+                if((stripos($firstName, $textLower) !== FALSE) || (stripos($lastName, $textLower) !== FALSE)) {
+                    $found[] = $item;
+                }
+                if(\count($found) === $count) {
+                    break;
+                }
+            } 
+        }
+
+        return $found;
+
+//
+//        $exploded = \explode(' ', mb_strtoupper($text));
+//        if(\count($exploded) > 1) {
+//            $firstWord = $exploded[0];
+//            $secondWord = $exploded[1];
+//            
+//            $qb = $this->entityManager->createQueryBuilder();
+//            $qb->select('u')
+//                ->from(User::class, 'u')
+//                ->where("upper(u.firstName) LIKE '%{$firstWord}%' AND upper(u.lastName) LIKE '%{$secondWord}%'")
+//                ->orWhere("upper(u.firstName) LIKE '%{$secondWord}%' AND upper(u.lastName) LIKE '%{$firstWord}%'")
+//                ->andWhere("u.id != '{$requester->id()}'");
+//            if($cursor) {
+//                $qb->andWhere("u.id >= '{$cursor}'");
+//            }
+//            return $qb->setMaxResults($count)
+//                ->getQuery()
+//                //->useQueryCache(true)
+//                //->setResultCacheId('kek')
+//                //->useResultCache(true, 3600, 'kek')
+//                ->getResult();
+//        } else {            
+//            $qb = $this->entityManager->createQueryBuilder();
+//            $qb
+//                ->select('u')
+//                ->from(User::class, 'u')
+//                ->where("upper(u.firstName) LIKE '%{$text}%'")
+//                ->orWhere("upper(u.lastName) LIKE '%{$text}%'")
+//                ->andWhere("u.id != '{$requester->id()}'");
+//            if($cursor) {
+//                $qb->andWhere("u.id >= '{$cursor}'");
+//            }
+//            
+//            $query = $qb->setMaxResults($count)
+//                ->getQuery();
+//            
+//            return $query->getResult();
+//        }
     }
     
     function getByUsername2(string $username) {

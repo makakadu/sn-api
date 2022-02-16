@@ -1,0 +1,3 @@
+[2022-02-01T11:43:39.074313+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-01T11:46:16.204351+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-01T11:46:29.444507+02:00] errors_handler_middleware.ERROR: User 01fte5n46sjt6h4qaw9p5ktb7g not found  

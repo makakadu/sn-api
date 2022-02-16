@@ -1,0 +1,2 @@
+[2022-02-11T10:52:37.602779+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-11T10:56:33.082963+02:00] errors_handler_middleware.ERROR: Incorrect email or password  

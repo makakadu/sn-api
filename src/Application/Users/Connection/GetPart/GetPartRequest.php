@@ -20,6 +20,8 @@ class GetPartRequest implements BaseRequest {
     
     /** @var mixed $type */
     public $type;
+    /** @var mixed $start */
+    public $start;
     
     /**
      * @param mixed $cursor
@@ -28,7 +30,7 @@ class GetPartRequest implements BaseRequest {
      * @param mixed $hidePending
      * @param mixed $type
      */
-    public function __construct(string $requesterId, string $userId, $cursor, $hideAccepted, $hidePending, $count, $type) {
+    public function __construct(string $requesterId, string $userId, $cursor, $hideAccepted, $hidePending, $count, $type, $start) {
         $this->requesterId = $requesterId;
         $this->userId = $userId;
         $this->cursor = $cursor;
@@ -36,6 +38,7 @@ class GetPartRequest implements BaseRequest {
         $this->hideAccepted = $hideAccepted;
         $this->hidePending = $hidePending;
         $this->type = $type;
+        $this->start = $start;
     }
 
 }

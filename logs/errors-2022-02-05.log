@@ -1,0 +1,12 @@
+[2022-02-05T10:57:35.182007+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-05T12:07:25.511615+02:00] errors_handler_middleware.ERROR: Chat 01fv4nmgbgwdjbtj3dfzz5xwev not found  
+[2022-02-05T12:07:26.953271+02:00] errors_handler_middleware.ERROR: Chat 01fv4nmgbgwdjbtj3dfzz5xwev not found  
+[2022-02-05T12:07:28.652978+02:00] errors_handler_middleware.ERROR: Chat 01fv4nmgbgwdjbtj3dfzz5xwev not found  
+[2022-02-05T12:07:30.345584+02:00] errors_handler_middleware.ERROR: Chat 01fv4nmgbgwdjbtj3dfzz5xwev not found  
+[2022-02-05T12:07:32.643668+02:00] errors_handler_middleware.ERROR: Chat 01fv4nmgbgwdjbtj3dfzz5xwev not found  
+[2022-02-05T12:07:34.793508+02:00] errors_handler_middleware.ERROR: Chat 01fv4nmgbgwdjbtj3dfzz5xwev not found  
+[2022-02-05T17:05:57.459677+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-05T17:06:17.792395+02:00] errors_handler_middleware.ERROR: Message 01ft120n3efs0rp8vh3wxa2x80 not found  
+[2022-02-05T17:06:33.379537+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-05T17:06:42.756929+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-05T17:07:03.072396+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  

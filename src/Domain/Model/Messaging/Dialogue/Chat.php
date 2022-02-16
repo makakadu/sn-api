@@ -15,7 +15,7 @@ abstract class Chat {
     protected Collection $participants, $messagesHistories, $allMessages;
     protected \DateTime $creationDate;
     protected ?\DateTime $lastMessageDate = null;
-    protected array $actions = [];
+    protected array $events = [];
 
     function __construct(array $participants) {
         $this->id = uniqid();

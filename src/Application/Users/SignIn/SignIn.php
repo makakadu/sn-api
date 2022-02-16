@@ -31,7 +31,7 @@ class SignIn implements \App\Application\ApplicationService {
         $password = $request->password;
 
         if(!$email || !$password) {
-            throw new ValidationException(13, 'Email and password are required');
+            throw new ValidationException('Email and password are required');
         }
         
         $user = $this->users->getByEmail($email);

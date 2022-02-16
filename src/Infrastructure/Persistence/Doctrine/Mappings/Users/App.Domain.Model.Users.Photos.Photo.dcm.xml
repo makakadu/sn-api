@@ -7,10 +7,8 @@
         <id name="id" type="string"><generator strategy="NONE" /></id>
         
         <field name="createdAt" column="created_at" type="datetime" />
-        <field name="extraSmall" column="extra_small" type="array" />
         <field name="small" type="array" />
         <field name="medium" type="array" />
-        <field name="large" type="array" />
         <field name="original" type="array" />
     
         <field name="description" column="description" type="string" nullable="true"/>     

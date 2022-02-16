@@ -1,0 +1,3 @@
+[2022-01-21T16:22:59.298626+02:00] errors_handler_middleware.ERROR: Email and password are required  
+[2022-01-21T16:46:36.347063+02:00] errors_handler_middleware.ERROR: User asdasdasd not found  
+[2022-01-21T18:00:22.027668+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  

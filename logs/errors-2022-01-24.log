@@ -1,0 +1,3 @@
+[2022-01-24T17:34:08.237434+02:00] errors_handler_middleware.ERROR: Message id not found  
+[2022-01-24T18:38:43.547559+02:00] errors_handler_middleware.ERROR: Parameter 'text' is required and should be in request body  
+[2022-01-24T18:39:56.237389+02:00] errors_handler_middleware.ERROR: Parameter 'text' is required and should be in request body  

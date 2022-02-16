@@ -1,0 +1,8 @@
+[2022-01-28T12:53:47.278146+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-28T17:43:58.849131+02:00] errors_handler_middleware.ERROR: User c not found  
+[2022-01-28T17:44:04.630234+02:00] errors_handler_middleware.ERROR: User c not found  
+[2022-01-28T17:44:09.080176+02:00] errors_handler_middleware.ERROR: User c not found  
+[2022-01-28T17:45:12.619540+02:00] errors_handler_middleware.ERROR: User c not found  
+[2022-01-28T17:46:17.034683+02:00] errors_handler_middleware.ERROR: User c not found  
+[2022-01-28T17:46:28.743902+02:00] errors_handler_middleware.ERROR: User c not found  
+[2022-01-28T17:46:38.098579+02:00] errors_handler_middleware.ERROR: User c not found  

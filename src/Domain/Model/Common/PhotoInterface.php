@@ -8,8 +8,6 @@ interface PhotoInterface extends PhotoVisitorVisitable {
     
     // Здесь будут универсальные для всех фото сигнатуры методов
     function original(): array;
-    function extraSmall(): array;
     function small(): array;
     function medium(): array;
-    function large(): array;
 }

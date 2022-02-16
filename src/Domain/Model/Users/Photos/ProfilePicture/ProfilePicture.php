@@ -49,13 +49,10 @@ class ProfilePicture extends \App\Domain\Model\Users\Photos\Photo implements Sav
     function versions(): array {
         return [
             'original' => $this->original(),
-            'small' => $this->small(),
-            'extra_small' => $this->extraSmall(),
             'medium' => $this->medium(),
-            'large' => $this->large(),
+            'small' => $this->small(),
+            'cropped_original' => $this->croppedOriginal(),
             'cropped_small' => $this->croppedSmall(),
-            'cropped_medium' => $this->croppedMedium(),
-            'cropped_large' => $this->croppedLarge()
         ];
     }
 
@@ -66,5 +63,6 @@ class ProfilePicture extends \App\Domain\Model\Users\Photos\Photo implements Sav
     public function acceptReactableVisitor(\App\Domain\Model\Common\ReactableVisitor $visitor) {
         return $visitor->visitProfilePicture($this);
     }
+
 
 }

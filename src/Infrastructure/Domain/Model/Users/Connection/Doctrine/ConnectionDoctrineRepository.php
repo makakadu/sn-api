@@ -108,7 +108,7 @@ class ConnectionDoctrineRepository extends AbstractDoctrineRepository implements
     /**
      * @return array<Connection>
      */
-    function getWithUser(User $user, ?string $cursor, int $count, bool $hideAccepted, bool $hidePending, ?string $type): array { // Я не указывал нигде, но мне кажется, что если передан contactId, то offsetId не должно действовать
+    function getWithUser(User $user, ?string $cursor, int $count, bool $hideAccepted, bool $hidePending, ?string $type, ?int $start): array { // Я не указывал нигде, но мне кажется, что если передан contactId, то offsetId не должно действовать
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('c')->from(Connection::class, 'c');
         
@@ -134,6 +134,12 @@ class ConnectionDoctrineRepository extends AbstractDoctrineRepository implements
             $qb->andWhere('c.id >= :cursor')
             ->setParameter('cursor', $cursor);
         }
+        if($start) {
+            $startDate = new \DateTime();
+            $startDate->setTimestamp($start / 1000);
+            $qb->andWhere('c.createdAt >= :start')
+            ->setParameter('start', $startDate);
+        }
         
         $qb->setParameter('userId', $user->id())
             ->setMaxResults($count);
@@ -142,7 +148,7 @@ class ConnectionDoctrineRepository extends AbstractDoctrineRepository implements
         return $result;
     }
     
-    public function getCountWithUser(User $user, bool $hideAccepted, bool $hidePending, ?string $type): int {
+    public function getCountWithUser(User $user, bool $hideAccepted, bool $hidePending, ?string $type, ?int $start): int {
         $repository = $this->entityManager->getRepository(Connection::class);
         
         $qb = $repository->createQueryBuilder('c');
@@ -163,6 +169,12 @@ class ConnectionDoctrineRepository extends AbstractDoctrineRepository implements
         }
         if($hidePending) {
             $qb->andWhere('c.isAccepted != 0');
+        }
+        if($start) {
+            $startDate = new \DateTime();
+            $startDate->setTimestamp($start / 1000);
+            $qb->andWhere('c.createdAt >= :start')
+            ->setParameter('start', $startDate);
         }
         
         $qb->setParameter('userId', $user->id());

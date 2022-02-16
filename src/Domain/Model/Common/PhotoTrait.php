@@ -9,15 +9,11 @@ trait PhotoTrait {
     
     private array $original;
     private array $small;
-    private array $extraSmall;
     private array $medium;
-    private array $large;
     
     function original(): array { return $this->original; }
-    function extraSmall(): array { return $this->extraSmall; }
     function small(): array { return $this->small; }
     function medium(): array { return $this->medium; }
-    function large(): array { return $this->large; }
     
 //    function creator(): User {
 //        return $this->creator;
@@ -42,19 +38,15 @@ trait PhotoTrait {
          */
         $this->original = $versions['original'];
         $this->small = $versions['small'];
-        $this->extraSmall = $versions['extraSmall'];
         $this->medium = $versions['medium'];
-        $this->large = $versions['large'];
     }
     
     /** @return array<mixed> */
     function versions(): array {
         return [
             $this->original,
-            $this->large,
             $this->medium,
             $this->small,
-            $this->extraSmall
         ];
     }
 }

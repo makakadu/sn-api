@@ -1,0 +1,8 @@
+[2022-02-16T11:54:05.325990+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-16T12:32:03.790201+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-16T12:32:04.303045+02:00] errors_handler_middleware.ERROR: User oper not found  
+[2022-02-16T12:32:07.717280+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-02-16T14:28:07.003126+02:00] errors_handler_middleware.ERROR: Photo not found  
+[2022-02-16T14:28:55.128645+02:00] errors_handler_middleware.ERROR: Photo not found  
+[2022-02-16T14:29:33.123219+02:00] errors_handler_middleware.ERROR: Photo not found  
+[2022-02-16T14:30:44.465605+02:00] errors_handler_middleware.ERROR: Photo not found  

@@ -80,6 +80,7 @@ use App\Infrastructure\Domain\Model\Users\Albums\Doctrine\AlbumDoctrineRepositor
 use App\Domain\Model\Users\ConnectionsList\ConnectionsListRepository;
 use App\Infrastructure\Domain\Model\Users\ConnectionsList\Doctrine\ConnectionsListDoctrineRepository;
 use App\Domain\Model\Common\PhotoService;
+use Pusher\Pusher;
 
 define('PATH_TO_ROOT', dirname(__DIR__));
 
@@ -92,6 +93,30 @@ return [
         AppFactory::setContainer($container);
         return AppFactory::create();
     },
+            
+    Pusher::class => function (ContainerInterface $container) {
+        $options = array(
+          'cluster' => 'eu',
+          'useTLS' => true
+        );
+        return new Pusher(
+          'e6cbd9d805e4f4e0a599',
+          '43fde7fde62ae7692e2c',
+          '1334400',
+          $options
+        );
+    },
+//            
+//      $options = array(
+//    'cluster' => 'eu',
+//    'useTLS' => true
+//  );
+//  $pusher = new Pusher\Pusher(
+//    'e6cbd9d805e4f4e0a599',
+//    '43fde7fde62ae7692e2c',
+//    '1334400',
+//    $options
+//  );
 //    
 //    WarningsAndNoticesMiddleware::class => function (ContainerInterface $container) {
 //        return new WarningsAndNoticesMiddleware($container->get(LoggerFactory::class), $_ENV['env'] === 'prod');
@@ -146,7 +171,8 @@ return [
         $imagesStorage = $container->get('settings')['root'].'/public/images/';
         $forPhotosStorage = $imagesStorage . 'forphotos/';
         $forVideosStorage = $imagesStorage . 'forvideos/';
-        return new PhotoService($imagesStorage, $forPhotosStorage, $forVideosStorage);
+        $hostingApiKey = $_ENV['img_hosting_key'];
+        return new PhotoService($imagesStorage, $forPhotosStorage, $forVideosStorage, $hostingApiKey);
     },
             
     \App\Domain\Model\Common\VideoService::class => function (ContainerInterface $container) {
@@ -280,6 +306,8 @@ return [
     \App\Domain\Model\Users\Comments\AttachmentRepository::class => autowire(\App\Infrastructure\Domain\Model\Users\Comments\Attachment\Doctrine\AttachmentDoctrineRepository::class),
     \App\Domain\Model\Users\Comments\ProfileCommentRepository::class => autowire(\App\Infrastructure\Domain\Model\Users\Comments\Doctrine\ProfileCommentDoctrineRepository::class),
     \App\Domain\Model\Users\Photos\Cover\CoverRepository::class => autowire(\App\Infrastructure\Domain\Model\Users\Photos\Cover\Doctrine\CoverDoctrineRepository::class),
+    \App\Domain\Model\Chats\ChatRepository::class => autowire(\App\Infrastructure\Domain\Model\Chats\Doctrine\ChatDoctrineRepository::class),
+    \App\Domain\Model\Chats\MessageRepository::class => autowire(\App\Infrastructure\Domain\Model\Chats\Doctrine\MessageDoctrineRepository::class),
             
     UserPostReplyRepository::class => autowire(UserReplyDoctrineRepository::class),
             
@@ -314,27 +342,27 @@ return [
 //        );*/
 //        \Doctrine\DBAL\Types\Type::overrideType('datetime', \App\Infrastructure\DateTimeMicrosecondsType::class);
         //echo dirname(__DIR__, 1);exit();
-//        $conn = array(
-////            'driver'   => 'pdo_mysql',
-//            'driver'   => 'pdo_sqlite',
-//            'path' => dirname(__DIR__, 1) . '/data/newdb.db',
-////            'host'     => '127.0.0.1',
-////            'dbname'   => $_ENV['mysql_dbname'],
-////            'user'     => $_ENV['mysql_user'],
-////            'password' => $_ENV['mysql_password'],
-//            'user'     => '',
-//            'password' => '',
-//            'charset'  => 'utf8mb4'
-//        );
-        
         $conn = array(
-            'driver'   => 'pdo_mysql',
-            'host'     => '127.0.0.1',
-            'dbname'   => $_ENV['mysql_dbname'],
-            'user'     => $_ENV['mysql_user'],
-            'password' => $_ENV['mysql_password'],
+//            'driver'   => 'pdo_mysql',
+            'driver'   => 'pdo_sqlite',
+            'path' => dirname(__DIR__, 1) . '/data/newdb.db',
+//            'host'     => '127.0.0.1',
+//            'dbname'   => $_ENV['mysql_dbname'],
+//            'user'     => $_ENV['mysql_user'],
+//            'password' => $_ENV['mysql_password'],
+            'user'     => '',
+            'password' => '',
             'charset'  => 'utf8mb4'
         );
+        
+//        $conn = array(
+//            'driver'   => 'pdo_mysql',
+//            'host'     => '127.0.0.1',
+//            'dbname'   => $_ENV['mysql_dbname'],
+//            'user'     => $_ENV['mysql_user'],
+//            'password' => $_ENV['mysql_password'],
+//            'charset'  => 'utf8mb4'
+//        );
         
         $entityManager = EntityManager::create(
             $conn,// $config
@@ -406,6 +434,7 @@ return [
 //                PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings/Groups',
 //                PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings/Pages',
                 PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings/Common',
+                PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings/Chats',
                 //PATH_TO_ROOT . '/src/Infrastructure/Persistence/Doctrine/Mappings_OneToOneUnidirectionalCascade'
             ),
             ($_ENV['env'] == 'dev' ? true : false)

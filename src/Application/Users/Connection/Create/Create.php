@@ -14,17 +14,20 @@ use App\Domain\Model\Users\Subscription\SubscriptionRepository;
 use Assert\Assertion;
 use App\Application\Exceptions\ValidationException;
 use App\Domain\Model\DomainExceptionAlt;
+use Pusher\Pusher;
 
 class Create extends ConnectionAppService {
     
     private SubscriptionRepository $subscriptions;
+    private Pusher $pusher;
     
     function __construct(
         UserRepository $users, ConnectionRepository $connections,
-        ConnectionsAuth $auth, SubscriptionRepository $subscriptions
+        ConnectionsAuth $auth, SubscriptionRepository $subscriptions, Pusher $pusher
     ) {
         parent::__construct($users, $connections, $auth);
         $this->subscriptions = $subscriptions;
+        $this->pusher = $pusher;
     }
     
     public function execute(BaseRequest $request): BaseResponse {
@@ -55,6 +58,9 @@ class Create extends ConnectionAppService {
             $this->subscriptions->add($subscription);
             $createdSubscriptionId = $subscription->id();
         }
+        
+        $this->connections->flush();
+        $this->pusher->trigger($requestee->id(), 'create-connection', ['id' => $connection->id(), 'targetId' => $requestee->id()]);
 
         return new CreateResponse($connection->id(), $createdSubscriptionId);
     }

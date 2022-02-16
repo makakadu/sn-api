@@ -1,0 +1,11 @@
+[2022-01-19T10:45:14.293918+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-01-19T13:56:38.295393+02:00] errors_handler_middleware.ERROR: User 123 not found  
+[2022-01-19T13:56:38.718896+02:00] errors_handler_middleware.ERROR: User 123 not found  
+[2022-01-19T14:27:47.150316+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-19T14:40:15.891904+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-19T14:40:36.530376+02:00] errors_handler_middleware.ERROR: User 01fsehex5gg2bbn6e8kpfcjp3q not found  
+[2022-01-19T18:19:18.255670+02:00] errors_handler_middleware.ERROR: Cannot create connection with himself  
+[2022-01-19T18:20:39.682074+02:00] errors_handler_middleware.ERROR: Cannot create connection with himself  
+[2022-01-19T18:29:44.507810+02:00] errors_handler_middleware.ERROR: Cannot create connection with himself  
+[2022-01-19T18:30:13.462127+02:00] errors_handler_middleware.ERROR: Cannot create connection with himself  
+[2022-01-19T18:30:18.611732+02:00] errors_handler_middleware.ERROR: Cannot create connection with himself  

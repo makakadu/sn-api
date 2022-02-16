@@ -1,0 +1,3 @@
+[2022-01-26T15:53:13.840605+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-26T16:20:39.914033+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-01-26T16:20:50.770871+02:00] errors_handler_middleware.ERROR: Chat 01ftbaktv7m9jaja2je9688bbg not found  

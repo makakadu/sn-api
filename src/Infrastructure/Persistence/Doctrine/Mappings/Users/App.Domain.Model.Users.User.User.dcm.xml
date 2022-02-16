@@ -37,6 +37,8 @@
         <field name="isBlocked" column="is_blocked" type="boolean" />
         <!--field name="isOnline" column="is_online" type="boolean" /-->
         <field name="isActivated" column="is_activated" type="boolean" />
+        
+        <field name="lastRequestsCheck" column="last_requests_check" type="datetime" />
 
         <!--field name="friendLists" column="friend_lists" type="array" /-->
         <!--field name="hiddenFriends" column="hidden_friends" type="array" /-->

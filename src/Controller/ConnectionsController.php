@@ -92,6 +92,7 @@ class ConnectionsController extends AbstractController {
             isset($queryParams['hide-pending']) ? $queryParams['hide-pending'] : null,
             isset($queryParams['count']) ? $queryParams['count'] : null,
             isset($queryParams['type']) ? $queryParams['type'] : null,
+            isset($queryParams['start']) ? $queryParams['start'] : null,
         );
         
         $useCase = new TransactionalApplicationService(

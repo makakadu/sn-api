@@ -40,7 +40,7 @@ trait TransformerTrait {
         
         return new CreatorDTO(
             $user->id(),
-            $picture && $active ? $picture->versions()['cropped_medium'] : null,
+            $picture && $active ? $picture->versions()['cropped_original'] : null,
             $user->firstName(), 
             $user->lastName(),
             $user->username()->username()
@@ -53,7 +53,7 @@ trait TransformerTrait {
         
         return new UserSmallDTO(
             $user->id(),
-            $picture && $active ? $picture->versions()['cropped_medium'] : null,
+            $picture && $active ? $picture->versions()['cropped_original'] : null,
             $user->firstName(), 
             $user->lastName(),
             $user->username()->username()

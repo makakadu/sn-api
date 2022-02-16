@@ -10,8 +10,7 @@ class Cover extends \App\Domain\Model\Users\Photos\Photo  {
     use \App\Domain\Model\EntityTrait;
 
     private string $croppedSmall;
-    private string $croppedMedium;
-    private string $croppedLarge;
+    private string $croppedOriginal;
     
     /**
      * @param array<mixed> $versions
@@ -29,26 +28,21 @@ class Cover extends \App\Domain\Model\Users\Photos\Photo  {
     
     /** @param array<mixed> $versions */
     private function setCroppedVersions(array $versions): void {
-        $this->croppedLarge = $versions['cropped_large'];
-        $this->croppedMedium = $versions['cropped_medium'];
+        $this->croppedOriginal = $versions['cropped_original'];
         $this->croppedSmall = $versions['cropped_small'];
     }
     
     function croppedSmall(): string { return $this->croppedSmall; }
-    function croppedMedium(): string { return $this->croppedMedium; }
-    function croppedLarge(): string { return $this->croppedLarge; }
+    function croppedOriginal(): string { return $this->croppedOriginal; }
     
     /** @return array<mixed> */
     function versions(): array {
         return [
             'original' => $this->original(),
             'small' => $this->small(),
-            'extra_small' => $this->extraSmall(),
             'medium' => $this->medium(),
-            'large' => $this->large(),
             'cropped_small' => $this->croppedSmall(),
-            'cropped_medium' => $this->croppedMedium(),
-            'cropped_large' => $this->croppedLarge()
+            'cropped_original' => $this->croppedOriginal()
         ];
     }
 }

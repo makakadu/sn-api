@@ -1,0 +1,6 @@
+[2022-02-08T11:31:51.629014+02:00] errors_handler_middleware.ERROR: Message 1644245059288 not found  
+[2022-02-08T13:04:11.187315+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-08T13:04:32.145532+02:00] errors_handler_middleware.ERROR: Participant 'gdfgd' not found  
+[2022-02-08T18:10:45.573295+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-08T18:13:46.853542+02:00] errors_handler_middleware.ERROR: User 01fte5n46sjt6h4qaw9p5ktb7g not found  
+[2022-02-08T18:25:28.805135+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  

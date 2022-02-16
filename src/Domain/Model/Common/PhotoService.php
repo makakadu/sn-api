@@ -12,6 +12,7 @@ class PhotoService {
     private string $imagesStorage;
     private string $storageForPhotos;
     private string $storageForVideos;
+    private string $imgbbApiKey;
     
     /** @var array<array> $versionsSizes */
     private $versionsSizes = [
@@ -22,11 +23,12 @@ class PhotoService {
         'large' => ['maxWidth' => 604, 'maxHeight' => 604]
     ];
     
-    function __construct(string $imagesStorage, string $storageForPhotos, string $storageForVideos) {
+    function __construct(string $imagesStorage, string $storageForPhotos, string $storageForVideos, string $imgbbApiKey) {
         $this->imageManager = new \App\Application\SimpleImage();
         $this->imagesStorage = $imagesStorage;
         $this->storageForPhotos = $storageForPhotos;
         $this->storageForVideos = $storageForVideos;
+        $this->imgbbApiKey = $imgbbApiKey;
     }
     
     function imagesStorage(): string {
@@ -58,34 +60,16 @@ class PhotoService {
         }
     }
     
-//    function createCopyFor(User $user, \App\Domain\Model\Common\PhotoInterface $photo): \App\Domain\Model\Users\Photos\Photo {
-//        $original = $photo->original();
-//        $this->imageManager->load($original);
-//        
-//        $storage = $this->storage.$this->forPhotosFolderName;
-//        
-//        $versions = [
-//            "original" => $storage.uniqid()."_or.jpg",
-//            "extraSmall" => $storage.uniqid()."_es.jpg",
-//            "small" => $storage.uniqid()."_sm.jpg",
-//            "medium" => $storage.uniqid()."_md.jpg",
-//            "large" => $storage.uniqid()."_lg.jpg"
-//        ];
-//        $this->imageManager->save($versions['original']);
-//        $this->createVersion($versions['original'], "extraSmall", $versions['extraSmall']);
-//        $this->createVersion($versions['original'], "small", $versions['small']);
-//        $this->createVersion($versions['original'], "medium", $versions['medium']);
-//        $this->createVersion($versions['original'], "large", $versions['large']);
-//        
-//        return new \App\Domain\Model\Users\Photos\Photo($user, $versions);
-//    }
+    function generateJPGPath(): string {
+        return $this->imagesStorage.'temp/'. (string)\Ulid\Ulid::generate(true);
+    }
     
     /** @return array<string> */
     function createPhotoVersionsFromUploaded(\Psr\Http\Message\UploadedFileInterface $photo) : array {        
         if($photo->getError() !== 0) {
             throw new \Exception('Photo upload error');
         }
-        $tempPhotoPath = $this->imagesStorage.'temp/'. (string)\Ulid\Ulid::generate(true);
+        $tempPhotoPath = $this->generateJPGPath();
         $this->toJPEG($photo, $tempPhotoPath);
         $storage = $this->storageForPhotos;
         $versions = $this->createPhotoVersions($tempPhotoPath, $storage);
@@ -94,26 +78,107 @@ class PhotoService {
     }
     
     /** @return array<string> */
-    function createPictureVersionsFromUploaded(\Psr\Http\Message\UploadedFileInterface $photo, int $x, int $y, int $width) : array {        
-        if($photo->getError() !== 0) {
-            throw new \Exception('Photo upload error');
+    function createPictureVersionsFromUploaded(\Psr\Http\Message\UploadedFileInterface $photo, int $x, int $y, int $width) : array {
+        $ext = $photo->getClientMediaType();
+        $jpgPath = $this->generateJPGPath();
+        if($ext === 'image/jpeg') {
+            $photo->moveTo($jpgPath);
+        } else {
+            $this->toJPEG($photo, $jpgPath);
         }
-        $tempPhotoPath = $this->imagesStorage.'temp/'. (string)\Ulid\Ulid::generate(true);
-        $this->toJPEG($photo, $tempPhotoPath);
-        
-        $sizes = getimagesize($tempPhotoPath);
-
+        $sizes = getimagesize($jpgPath);
         if(($x + $width) > $sizes[0]) {
             throw new \App\Domain\Model\DomainExceptionAlt(['code' => 228, 'message' => "Sum of 'x' and 'width' cannot be bigger than image width"]);
         } elseif(($y + $width) > $sizes[1]) {
             throw new \App\Domain\Model\DomainExceptionAlt(['code' => 228, 'message' => "Sum of 'y' and 'width' cannot be bigger than image height"]);
         }
         $storage = $this->storageForPhotos;
-        $standardVersions = $this->createPhotoVersions($tempPhotoPath, $storage);
-        $croppedVersions = $this->createCroppedVersions($tempPhotoPath, $x, $y, $width, $storage);
-        \unlink($tempPhotoPath);
+        $standardVersions = $this->createPhotoVersions($jpgPath, $storage);
+        $croppedVersions = $this->createCroppedVersions($jpgPath, $x, $y, $width, $storage);
+        \unlink($jpgPath);
         
-        return \array_merge($standardVersions, $croppedVersions);
+        $merged = \array_merge($standardVersions, $croppedVersions);
+        return $merged;
+    }
+    
+    /** @return array<string> */
+    function createCroppedVersions(string $originalPath, int $x, int $y, int $width, string $storage): array {
+        $name = uniqid();
+        $versions['cropped_or'] = $storage.$name."_crlg.jpg";
+        $versions['cropped_sm'] = $storage.$name."_crsm.jpg";
+        
+        $image = imagecreatefromjpeg($originalPath);
+        if(!$image) {
+            throw new \App\Domain\Model\DomainExceptionAlt(['code' => 228, 'message' => 'Invalid image']);
+        }
+        $cropped = imagecrop($image, ['x' => $x, 'y' => $y, 'width' => $width, 'height' => $width]);
+        if(!$cropped) {
+            throw new \Exception('Failed to crop photo');
+        }
+        imagedestroy($image);
+        $temp = $this->imagesStorage.'temp/'. (string)\Ulid\Ulid::generate(true);
+        imagejpeg($cropped, $temp);
+        imagedestroy($cropped);
+
+        $this->imageManager->load($temp);
+        $this->imageManager->resizeToWidth($width);
+        $this->imageManager->save($versions['cropped_or']);
+        $originalCropped = $this->upload(uniqid(), $versions['cropped_or']);
+        \unlink($versions['cropped_or']); 
+        
+        $this->imageManager->load($temp);
+        $this->imageManager->resizeToWidth(70);
+        $this->imageManager->save($versions['cropped_sm']);
+        $smallCropped = $this->upload(uniqid(), $versions['cropped_sm']);
+        \unlink($versions['cropped_sm']);
+        
+        \unlink($temp);
+        
+        $created = [
+            'cropped_original' => $originalCropped,
+            'cropped_small' => $smallCropped
+        ];
+        return $created;
+    }
+    
+    /** @return array<string> */
+    function createCoverCroppedVersions(string $originalPath, int $x, int $y, float $width, float $height, string $storage): array {
+        $name = uniqid();
+        $versions['cropped_original'] = $storage.$name."_cror.jpg";
+        $versions['cropped_small'] = $storage.$name."_crsm.jpg";
+
+        $image = imagecreatefromjpeg($originalPath);
+        if(!$image) {
+            throw new \App\Domain\Model\DomainExceptionAlt(['code' => 228, 'message' => 'Invalid image']);
+        }
+        $cropped = imagecrop($image, ['x' => $x, 'y' => $y, 'width' => $width, 'height' => $height]);
+        if(!$cropped) {
+            throw new \Exception('Failed to crop photo');
+        }
+        imagedestroy($image);
+        $temp = $this->imagesStorage.'temp/'. (string)\Ulid\Ulid::generate(true);
+        imagejpeg($cropped, $temp);
+        imagedestroy($cropped);
+
+        $this->imageManager->load($temp);
+        $this->imageManager->resizeToWidth($width);
+        $this->imageManager->save($versions['cropped_original']);
+        $originalCropped = $this->upload(uniqid(), $versions['cropped_original']);
+        \unlink($versions['cropped_original']); 
+        
+        $this->imageManager->load($temp);
+        $this->imageManager->resizeToWidth(200);
+        $this->imageManager->save($versions['cropped_small']);
+        $smallCropped = $this->upload(uniqid(), $versions['cropped_small']);
+        \unlink($versions['cropped_small']);
+        
+        \unlink($temp);
+        
+        $created = [
+            'cropped_original' => $originalCropped,
+            'cropped_small' => $smallCropped
+        ];
+        return $created;
     }
     
     /** @return array<string> */
@@ -121,10 +186,14 @@ class PhotoService {
         if($photo->getError() !== 0) {
             throw new \Exception('Photo upload error');
         }
-        $tempPhotoPath = $this->imagesStorage.'temp/'. (string)\Ulid\Ulid::generate(true);
-        $this->toJPEG($photo, $tempPhotoPath);
-        
-        $sizes = getimagesize($tempPhotoPath);
+        $ext = $photo->getClientMediaType();
+        $jpgPath = $this->generateJPGPath();
+        if($ext === 'image/jpeg') {
+            $photo->moveTo($jpgPath);
+        } else {
+            $this->toJPEG($photo, $jpgPath);
+        }
+        $sizes = getimagesize($jpgPath);
         
         if(($x + $width) > $sizes[0]) {
             throw new \App\Domain\Model\DomainExceptionAlt(['code' => 228, 'message' => "Sum of 'x' and 'width' cannot be bigger than image width"]);
@@ -134,11 +203,11 @@ class PhotoService {
             throw new \App\Domain\Model\DomainExceptionAlt(['code' => 228, 'message' => "Sum of 'y' and 33% of 'width' cannot be bigger than image height"]);
         }
         $storage = $this->storageForPhotos;
-        $standardVersions = $this->createPhotoVersions($tempPhotoPath, $storage);
-        $croppedVersions = $this->createCoverCroppedVersions($tempPhotoPath, $x, $y, $width, $height, $storage);
-        \unlink($tempPhotoPath);
-        
-        return \array_merge($standardVersions, $croppedVersions);
+        $standardVersions = $this->createPhotoVersions($jpgPath, $storage);
+        $croppedVersions = $this->createCoverCroppedVersions($jpgPath, $x, $y, $width, $height, $storage);
+        \unlink($jpgPath);
+        $merged = \array_merge($standardVersions, $croppedVersions);
+        return $merged;
     }
     
     /** @return array<string> */
@@ -148,58 +217,64 @@ class PhotoService {
     }
     
     /** @return array<string> */
-    function createPhotoVersions(string $path, string $storage): array {
+    function createPhotoVersions(string $originalPath, string $storage): array {
         $photoName = uniqid();
         //echo $storage;exit();
 
         $versions = [
             "original" => $storage.$photoName.'_or.jpg',
-            "large" => $storage.$photoName."_lg.jpg",
             "medium" => $storage.$photoName."_md.jpg",
             "small" => $storage.$photoName."_sm.jpg",
-            "extraSmall" => $storage.$photoName."_es.jpg",
         ];
-        $this->createVersion($path, "original", $versions['original']);
-        $this->createVersion($path, "large", $versions['large']);
-        $this->createVersion($path, "medium", $versions['medium']);
-        $this->createVersion($path, "small", $versions['small']);
-        $this->createVersion($path, "extraSmall", $versions['extraSmall']);
+        
+        $this->createVersion($originalPath, "medium", $versions['medium']);
+        $mediumLink = $this->upload(uniqid(), $versions['medium']);
+        $this->createVersion($originalPath, "small", $versions['small']);
+        $smallLink = $this->upload(uniqid(), $versions['small']);
+        $this->imageManager->load($originalPath);
+        $this->imageManager->save($versions['original']);
+        $originalLink = $this->upload(uniqid(), $versions['original']);
         
         $originalDimensions = getimagesize($versions['original']);
-        $largeDimensions = getimagesize($versions['large']);
         $mediumDimensions = getimagesize($versions['medium']);
         $smallDimensions = getimagesize($versions['small']);
-        $extraSmallDimensions = getimagesize($versions['extraSmall']);
         
-        $versions = [
+        $created = [
             "original" => [
-                'src' => $photoName.'_or.jpg',
+                'src' => $originalLink,
                 'width' => $originalDimensions[0],
                 'height' => $originalDimensions[1],
-            ],  
-            "large" => [
-                'src' => $photoName.'_lg.jpg',
-                'width' => $largeDimensions[0],
-                'height' => $largeDimensions[1],
-            ],  
+            ],
             "medium" => [
-                'src' => $photoName.'_md.jpg',
+                'src' => $mediumLink,
                 'width' => $mediumDimensions[0],
                 'height' => $mediumDimensions[1],
             ],  
             "small" => [
-                'src' => $photoName.'_sm.jpg',
+                'src' => $smallLink,
                 'width' => $smallDimensions[0],
                 'height' => $smallDimensions[1],
-            ],  
-            "extraSmall" => [
-                'src' => $photoName.'_es.jpg',
-                'width' => $extraSmallDimensions[0],
-                'height' => $extraSmallDimensions[1],
-            ],  
+            ],
         ];
         
-        return $versions;
+        \unlink($versions['medium']);
+        \unlink($versions['small']);
+        \unlink($versions['original']);
+        return $created;
+    }
+    
+    function upload(string $name, string $path) {
+	$data = array(
+            'image' => base64_encode(file_get_contents($path)),
+            'name' => $name
+        );
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, 'https://api.imgbb.com/1/upload?key='.$this->imgbbApiKey);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_POST, true);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+	$result = curl_exec($ch);
+        return json_decode($result)->data->image->url;        
     }
     
     /** @return array<string> */
@@ -224,82 +299,6 @@ class PhotoService {
             $imageManager->resizeToHeight($versionInfo['maxHeight']);
         }
         $imageManager->save($destination);
-    }
-    
-    /** @return array<string> */
-    function createCoverCroppedVersions(string $originalPath, int $x, int $y, float $width, float $height, string $storage): array {
-        $name = uniqid();
-        $versions['cropped_large'] = $name."_crlg.jpg";
-        $versions['cropped_medium'] = $name."_crmd.jpg";
-        $versions['cropped_small'] = $name."_crsm.jpg";
-
-        $image = imagecreatefromjpeg($originalPath);
-        if(!$image) {
-            throw new \App\Domain\Model\DomainExceptionAlt(['code' => 228, 'message' => 'Invalid image']);
-        }
-        $cropped = imagecrop($image, ['x' => $x, 'y' => $y, 'width' => $width, 'height' => $height]);
-        if(!$cropped) {
-            throw new \Exception('Failed to crop photo');
-        }
-        imagedestroy($image);
-        $temp = $this->imagesStorage.'temp/'. (string)\Ulid\Ulid::generate(true);
-        imagejpeg($cropped, $temp);
-        imagedestroy($cropped);
-
-        $this->imageManager->load($temp);
-        $this->imageManager->resizeToWidth($width);
-        $this->imageManager->save($storage.$versions['cropped_large']);
-        
-        $this->imageManager->load($temp);
-        $this->imageManager->resizeToWidth(140);
-        $this->imageManager->save($storage.$versions['cropped_medium']);
-        
-        $this->imageManager->load($temp);
-        $this->imageManager->resizeToWidth(70);
-        $this->imageManager->save($storage.$versions['cropped_small']);
-        
-        \unlink($temp);
-        
-        return $versions;
-    }
-    
-    /** @return array<string> */
-    function createCroppedVersions(string $originalPath, int $x, int $y, int $width, string $storage): array {
-        $name = uniqid();
-        $versions['cropped_large'] = $name."_crlg.jpg";
-        $versions['cropped_medium'] = $name."_crmd.jpg";
-        $versions['cropped_small'] = $name."_crsm.jpg";
-        //print_r($storage);exit();
-        
-        //echo $originalPath;exit();
-        $image = imagecreatefromjpeg($originalPath);
-        if(!$image) {
-            throw new \App\Domain\Model\DomainExceptionAlt(['code' => 228, 'message' => 'Invalid image']);
-        }
-        $cropped = imagecrop($image, ['x' => $x, 'y' => $y, 'width' => $width, 'height' => $width]);
-        if(!$cropped) {
-            throw new \Exception('Failed to crop photo');
-        }
-        imagedestroy($image);
-        $temp = $this->imagesStorage.'temp/'. (string)\Ulid\Ulid::generate(true);
-        imagejpeg($cropped, $temp);
-        imagedestroy($cropped);
-
-        $this->imageManager->load($temp);
-        $this->imageManager->resizeToWidth($width);
-        $this->imageManager->save($storage.$versions['cropped_large']);
-        
-        $this->imageManager->load($temp);
-        $this->imageManager->resizeToWidth(140);
-        $this->imageManager->save($storage.$versions['cropped_medium']);
-        
-        $this->imageManager->load($temp);
-        $this->imageManager->resizeToWidth(70);
-        $this->imageManager->save($storage.$versions['cropped_small']);
-        
-        \unlink($temp);
-        
-        return $versions;
     }
     
     function toJPEG(\Psr\Http\Message\UploadedFileInterface $photo, string $name): void {

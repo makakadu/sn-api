@@ -19,8 +19,8 @@ interface ConnectionRepository extends Repository {
     /**
      * @return array<Connection>
      */
-    function getWithUser(User $user, ?string $cursor, int $count, bool $hideAccepted, bool $hidePending, ?string $type): array;
-    function getCountWithUser(User $user, bool $hideAccepted, bool $hidePending, ?string $type): int;
+    function getWithUser(User $user, ?string $cursor, int $count, bool $hideAccepted, bool $hidePending, ?string $type, ?int $start): array;
+    function getCountWithUser(User $user, bool $hideAccepted, bool $hidePending, ?string $type, ?int $start): int;
 
 
 //    function getByInitiatorId(int $id);

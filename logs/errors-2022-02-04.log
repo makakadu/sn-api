@@ -1,0 +1,13 @@
+[2022-02-04T09:03:07.904338+02:00] errors_handler_middleware.ERROR: Participant 'аыаываыва' not found  
+[2022-02-04T13:18:33.438374+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:40:17.285931+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-04T15:42:15.919935+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-04T15:42:35.345828+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:42:35.591300+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:45:04.252569+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:45:04.492169+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:45:04.734332+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:47:08.458060+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:47:08.680705+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:47:08.908723+02:00] errors_handler_middleware.ERROR: No rights  
+[2022-02-04T15:51:04.788420+02:00] errors_handler_middleware.ERROR: Chat 01fv2fz8xgcq2c6xj92nahxmfa not found  

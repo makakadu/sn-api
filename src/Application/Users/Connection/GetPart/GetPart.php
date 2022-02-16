@@ -28,9 +28,10 @@ class GetPart implements \App\Application\ApplicationService {
         $count = \is_null($request->count) ? 20 : (int)$request->count;
         $hideAccepted = \is_null($request->hideAccepted) ? false : (bool)$request->hideAccepted;
         $hidePending = \is_null($request->hidePending) ? false : (bool)$request->hidePending;
+        $start = \is_null($request->start) ? null : (int)$request->start;
         
         $connections = $this->connections->getWithUser(
-            $user, $request->cursor, ($count + 1), $hideAccepted, $hidePending, $request->type
+            $user, $request->cursor, ($count + 1), $hideAccepted, $hidePending, $request->type, $start
         );
         
         $cursor = null;
@@ -39,7 +40,7 @@ class GetPart implements \App\Application\ApplicationService {
             array_pop($connections);
         }
         
-        $allCount = $this->connections->getCountWithUser($user, $hideAccepted, $hidePending, $request->type);
+        $allCount = $this->connections->getCountWithUser($user, $hideAccepted, $hidePending, $request->type, $start);
         
         $connsTransformer = new \App\DataTransformer\Users\ConnectionTransformer();
         $dtos = [];
