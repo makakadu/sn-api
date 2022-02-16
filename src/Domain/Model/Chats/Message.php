@@ -16,7 +16,7 @@ class Message {
     private Chat $chat;
     private bool $deletedForAll;
     private array $deletedFor;
-    private string $key;
+    private string $frontKey;
     private string $creatorId;
 
     function __construct(User $creator, Chat $chat, string $text, string $key) {
@@ -29,7 +29,9 @@ class Message {
         $this->deletedFor = [];
         $this->createdAt = new \DateTime('now');
         $this->isRead = false;
-        $this->key = $key;
+        $this->frontKey = strtolower($key);
+        
+//        echo $this->key;exit();
     }
     
     function getId(): string {
@@ -49,7 +51,7 @@ class Message {
     }
     
     function key(): string {
-        return $this->key;
+        return $this->frontKey;
     }
 
     function creator(): User { return $this->creator; }

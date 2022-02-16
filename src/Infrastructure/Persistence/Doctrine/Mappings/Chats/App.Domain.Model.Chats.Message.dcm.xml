@@ -5,7 +5,6 @@
 
     <entity name="App\Domain\Model\Chats\Message" table="chat_messages">
         <options>
-            <option name="charset">utf8mb4</option>
             <option name="collate">utf8mb4_unicode_ci</option>
         </options>
         
@@ -14,7 +13,7 @@
         </id>
         
         <unique-constraints>
-            <unique-constraint columns="key" name="unique_front_key" />
+            <unique-constraint columns="front_key" name="unique_front_key" />
         </unique-constraints>
         
         <field name="createdAt" column="created_at" type="datetime" />
@@ -22,7 +21,7 @@
         <field name="deletedFor" column="deleted_for" type="array" />
         <field name="text" type="string" />
         <field name="creatorId" column="_creator_id" type="string" />
-        <field name="key" column='key' type="string" />
+        <field name="frontKey" column='front_key' type="string" />
 
         
         <many-to-one target-entity="App\Domain\Model\Users\User\User" field="creator" />

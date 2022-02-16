@@ -6,3 +6,7 @@
 [2022-02-16T14:28:55.128645+02:00] errors_handler_middleware.ERROR: Photo not found  
 [2022-02-16T14:29:33.123219+02:00] errors_handler_middleware.ERROR: Photo not found  
 [2022-02-16T14:30:44.465605+02:00] errors_handler_middleware.ERROR: Photo not found  
+[2022-02-16T22:32:08.859632+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-02-16T22:34:10.955312+02:00] errors_handler_middleware.ERROR: Chat undefined not found  
+[2022-02-16T22:39:59.161714+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-02-16T23:15:01.551338+02:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
