@@ -342,27 +342,41 @@ return [
 //        );*/
 //        \Doctrine\DBAL\Types\Type::overrideType('datetime', \App\Infrastructure\DateTimeMicrosecondsType::class);
         //echo dirname(__DIR__, 1);exit();
-        $conn = array(
-//            'driver'   => 'pdo_mysql',
-            'driver'   => 'pdo_sqlite',
-            'path' => dirname(__DIR__, 1) . '/data/newdb.db',
-//            'host'     => '127.0.0.1',
-//            'dbname'   => $_ENV['mysql_dbname'],
-//            'user'     => $_ENV['mysql_user'],
-//            'password' => $_ENV['mysql_password'],
-            'user'     => '',
-            'password' => '',
-            'charset'  => 'utf8mb4'
-        );
+//        $conn = array(
+////            'driver'   => 'pdo_mysql',
+//            'driver'   => 'pdo_sqlite',
+//            'path' => dirname(__DIR__, 1) . '/data/newdb.db',
+////            'host'     => '127.0.0.1',
+////            'dbname'   => $_ENV['mysql_dbname'],
+////            'user'     => $_ENV['mysql_user'],
+////            'password' => $_ENV['mysql_password'],
+//            'user'     => '',
+//            'password' => '',
+//            'charset'  => 'utf8mb4'
+//        );
         
 //        $conn = array(
 //            'driver'   => 'pdo_mysql',
-//            'host'     => '127.0.0.1',
-//            'dbname'   => $_ENV['mysql_dbname'],
-//            'user'     => $_ENV['mysql_user'],
-//            'password' => $_ENV['mysql_password'],
+////            'host'     => '127.0.0.1',
+//            'host'     => 'db4free.net',
+////            'dbname'   => $_ENV['mysql_dbname'],
+////            'user'     => $_ENV['mysql_user'],
+////            'password' => $_ENV['mysql_password'],
+//            'dbname'   => 'kekpupolddb',
+//            'user'     => 'kekpupold',
+////            'password' => $_ENV['mysql_password'],
+//            'password' => '08051993',
 //            'charset'  => 'utf8mb4'
 //        );
+        
+        $conn = array(
+            'driver'   => 'pdo_mysql',
+            'host'     => 'd3y0lbg7abxmbuoi.chr7pe7iynqr.eu-west-1.rds.amazonaws.com:3306',
+            'dbname'   => 'vvc5pnwjc360r4jd',
+            'user'     => 'g53ekhmgjiu42wqj',
+            'password' => 'nzsyhzy4uv2shjcn',
+            'charset'  => 'utf8mb4'
+        );
         
         $entityManager = EntityManager::create(
             $conn,// $config
