@@ -18,7 +18,6 @@ class MyRequestPathRule {
 
     public function __invoke(\Psr\Http\Message\ServerRequestInterface $request): bool
     {
-        echo $request->getUri()->getPath();exit();
         $uri = "/" . $request->getUri()->getPath();
         $uri = preg_replace("#/+#", "/", $uri);
 
@@ -26,9 +25,11 @@ class MyRequestPathRule {
         
         // Логика аналогична той, которая в классе RequestPathRule, но с одним отличием, есть переменная $method. Теперь путь будет игнорироваться, если ещё и метод совпадает
         foreach ((array)$this->options["ignore"] as $ignore) {
+            print_r($ignore);
             $method = $ignore['method'] ?? null;
             
             $ignore = rtrim($ignore['uri'], "/");
+//            echo $ignore;exit();
             
             $uriMatched = !!preg_match("@^{$ignore}(/.*)?$@", (string) $uri);
             
