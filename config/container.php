@@ -168,7 +168,7 @@ return [
     },
     
     PhotoService::class => function (ContainerInterface $container) {
-        $imagesStorage = $container->get('settings')['root'].'/api/images/temp';
+        $imagesStorage = $container->get('settings')['root'].'/api/images/';
         $forPhotosStorage = $imagesStorage . 'forphotos/';
         $forVideosStorage = $imagesStorage . 'forvideos/';
         $hostingApiKey = $_ENV['img_hosting_key'];
