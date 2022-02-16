@@ -18,6 +18,7 @@ class MyRequestPathRule {
 
     public function __invoke(\Psr\Http\Message\ServerRequestInterface $request): bool
     {
+        echo $request->getUri()->getPath();exit();
         $uri = "/" . $request->getUri()->getPath();
         $uri = preg_replace("#/+#", "/", $uri);
 
