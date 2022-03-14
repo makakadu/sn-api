@@ -262,19 +262,36 @@ class PhotoService {
         \unlink($versions['original']);
         return $created;
     }
+//    
+//    function upload(string $name, string $path) {
+//	$data = [
+//            'image' => base64_encode(file_get_contents($path)),
+//            'name' => $name
+//        ];
+//	$ch = curl_init();
+//	curl_setopt($ch, CURLOPT_URL, 'https://api.imgbb.com/1/upload?key='.$this->imgbbApiKey);
+//	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//	curl_setopt($ch, CURLOPT_POST, true);
+//	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+////        print_r($data);exit();
+//	$result = curl_exec($ch);
+//        echo $result;exit();
+//        return json_decode($result)->data->image->url;        
+//    }
     
     function upload(string $name, string $path) {
-	$data = array(
-            'image' => base64_encode(file_get_contents($path)),
-            'name' => $name
-        );
+        $file = base64_encode(file_get_contents($path));
+        $client_id = '88b06657664e24d';
+        $url = 'https://api.imgur.com/3/image.json';
+        $headers = array("Authorization: Client-ID $client_id");
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, 'https://api.imgbb.com/1/upload?key='.$this->imgbbApiKey);
+	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_POST, true);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, ['image' => $file]);
 	$result = curl_exec($ch);
-        return json_decode($result)->data->image->url;        
+        return json_decode($result)->data->link;
     }
     
     /** @return array<string> */

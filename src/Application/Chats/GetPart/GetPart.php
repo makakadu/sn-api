@@ -40,30 +40,54 @@ class GetPart implements \App\Application\ApplicationService {
             $user, $request->interlocutorId, $request->type
         );
         
-        foreach($chats as $chat) {
-            $currentParticipant = null;
-            foreach($chat->participants() as $participant) {
-                if($participant->user()->equals($user)) {
-                    $currentParticipant = $participant;
-                    break;
+        if($request->hideEmpty) {
+            $nonEmptyChats = [];
+            foreach($chats as $chat) {
+                $currentParticipant = null;
+                foreach($chat->participants() as $participant) {
+                    if($participant->user()->equals($user)) {
+                        $currentParticipant = $participant;
+                        break;
+                    }
+                }
+                $criteria = Criteria::create();
+                $criteria
+                    ->where(Criteria::expr()->eq("deletedForAll", false))
+                    ->setMaxResults(1)
+                    ->orderBy(array('id' => Criteria::DESC));
+
+                $lastActiveMessage = $currentParticipant->messages()->matching($criteria)->first();
+                if($lastActiveMessage) {
+                    $chat->sortValue = $lastActiveMessage->id();
+                    $nonEmptyChats[] = $chat;
                 }
             }
-            
-            $criteria = Criteria::create();
-            $criteria
-                ->where(Criteria::expr()->eq("deletedForAll", 0))
-//                ->andWhere(Criteria::expr()->notIn("deletedFor", [$user->id()]))
-                ->setMaxResults(1)
-                ->orderBy(array('id' => Criteria::DESC));
+            $chats = $nonEmptyChats;
+        }
+        else {
+            foreach($chats as $chat) {
+                $currentParticipant = null;
+                foreach($chat->participants() as $participant) {
+                    if($participant->user()->equals($user)) {
+                        $currentParticipant = $participant;
+                        break;
+                    }
+                }
+                $criteria = Criteria::create();
+                $criteria
+                    ->where(Criteria::expr()->eq("deletedForAll", false))
+                    ->setMaxResults(1)
+                    ->orderBy(array('id' => Criteria::DESC));
 
-            $lastActiveMessage = $participant->messages()->matching($criteria)->first();
-
-            if($lastActiveMessage) {
-                $chat->sortValue = $lastActiveMessage->id();
-            } else {
-                $chat->sortValue = $chat->id();
+                $lastActiveMessage = $currentParticipant->messages()->matching($criteria)->first();
+                if($lastActiveMessage) {
+                    $chat->sortValue = $lastActiveMessage->id();
+                } else {
+                    $chat->sortValue = $chat->id();
+                }
             }
         }
+        
 
         if($request->onlyUnread) {
             $unreadChats = [];

@@ -50,28 +50,17 @@ class Create implements \App\Application\ApplicationService {
         foreach($chat->participants() as $participant) {
             $channels[] = 'chat_' . $participant->user()->id();
         }
-
+        
+        $firstMessage = $chat->messages()->first();
         $this->pusher->trigger(
             $channels,
             'create-chat',
-            ['chat' => $this->trans->transform($requester, $chat)]
+            [
+                'chat' => $this->trans->transform($requester, $chat, 0),
+                'message' => $this->messagesTrans->transform($requester, $firstMessage),
+                'front_key' => $request->frontKey
+            ]
         );
-        
-        $firstMessage = null;
-        if($request->firstMessage) {
-            $firstMessage = $chat->messages()->first();
-            if($firstMessage) {
-                $this->pusher->trigger(
-                    $channels,
-                    'create-message',
-                    [
-                        'chat_id' => $chat->id(),
-                        'message' => $this->messagesTrans->transform($requester, $firstMessage),
-                        'front_key' => $request->frontKey
-                    ]
-                );
-            }
-        }
         
         return new CreateResponse($chat->id(), $firstMessage ? $firstMessage->id() : null);
     }

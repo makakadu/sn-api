@@ -44,12 +44,12 @@ class ChatTransformer extends Transformer {
         }
         $criteria = Criteria::create();
         $criteria
-            ->where(Criteria::expr()->eq("deletedForAll", 0))
+            ->where(Criteria::expr()->eq("deletedForAll", false))
             ->setMaxResults($messagesCountPlusOne)
             ->orderBy(array('id' => Criteria::DESC));
         
         $criteria2 = Criteria::create();
-        $criteria2->where(Criteria::expr()->eq("deletedForAll", 0));
+        $criteria2->where(Criteria::expr()->eq("deletedForAll", false));
         $criteria2->andWhere(Criteria::expr()->neq("creatorId", $requester->id()));
         if($currentParticipant->lastReadMessageId()) {
             $criteria2->andWhere(Criteria::expr()->gt("id", $currentParticipant->lastReadMessageId()));
@@ -58,9 +58,14 @@ class ChatTransformer extends Transformer {
         $unreadMessagesCount = $unreadMessages->count();
         
         $messages = $currentParticipant->messages()->matching($criteria)->toArray();
+        $messagesArr = [];
+        foreach($messages as $message) {
+            $messagesArr[] = $message;
+        }
+        $messages = $messagesArr; // Чтобы индекс был цифрой, а не ID
         
         $criteria3 = Criteria::create();
-        $criteria3->where(Criteria::expr()->eq("deletedForAll", 0));
+        $criteria3->where(Criteria::expr()->eq("deletedForAll", false));
         $criteria3->orderBy(array('id' => Criteria::DESC));
         $criteria3->setMaxResults(1);
         
@@ -70,6 +75,7 @@ class ChatTransformer extends Transformer {
         
         $messageCursor = null;
         if((count($messages) - $messagesCount) === 1) {
+
             $messageCursor = $messages[count($messages) -1]->id();
             array_pop($messages);
         }
@@ -80,7 +86,7 @@ class ChatTransformer extends Transformer {
             $participantsDTOs[] = $this->creatorToDTO($participant->user());
         }
         $lastReadMessageId = $currentParticipant->lastReadMessageId();
-                
+//        echo $currentParticipant->user()->id() . '-----';
         return new ChatDTO(
             $chat->id(),
             $participantsDTOs,

@@ -31,6 +31,12 @@ class Participant {
         $this->lastReadMessageId = $message->id();
     }
     
+    function clearHistory(): void {
+        $this->messages = new ArrayCollection();
+        $this->lastMessageId = null;
+        $this->lastReadMessageId = null;
+    }
+    
     function user(): User {
         return $this->user;
     }

@@ -17,7 +17,7 @@ class Message {
     private bool $deletedForAll;
     private array $deletedFor;
     private string $frontKey;
-    private string $creatorId;
+    public string $creatorId;
 
     function __construct(User $creator, Chat $chat, string $text, string $key) {
         $this->id = (string)Ulid::generate(true);

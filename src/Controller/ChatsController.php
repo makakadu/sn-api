@@ -14,6 +14,7 @@ use App\Application\Chats\Get\GetRequest;
 use App\Application\Chats\Patch\PatchRequest;
 use App\Application\Chats\DeleteMessage\DeleteMessageRequest;
 use App\Application\Chats\PatchMessage\PatchMessageRequest;
+use App\Application\Chats\DeleteHistory\DeleteHistoryRequest;
 
 class ChatsController extends AbstractController {
     /**
@@ -69,6 +70,12 @@ class ChatsController extends AbstractController {
      * @var \App\Application\Chats\DeleteMessage\DeleteMessage
      */
     private $deleteMessage;
+    
+    /**
+     * @Inject
+     * @var \App\Application\Chats\DeleteHistory\DeleteHistory
+     */
+    private $deleteHistory;
     
     /**
      * @Inject
@@ -128,6 +135,7 @@ class ChatsController extends AbstractController {
             isset($queryParams['messages-count']) ? $queryParams['messages-count'] : null,
             isset($queryParams['only-unread']) ? $queryParams['only-unread'] : null,
             isset($queryParams['fields']) ? $queryParams['fields'] : null,
+            isset($queryParams['hide-empty']) ? $queryParams['hide-empty'] : null,
             'ASC'
         );
         $useCase = new TransactionalApplicationService(
@@ -215,6 +223,18 @@ class ChatsController extends AbstractController {
         );
         $useCase = new TransactionalApplicationService(
             $this->deleteMessage, $this->transactionalSession
+        );
+        $responseDTO = $useCase->execute($requestDTO);
+        return $this->prepareResponse($response, $responseDTO, 200);
+    }
+    
+    function deleteHistory(Request $request, Response $response) {
+        $requestDTO = new DeleteHistoryRequest(
+            $request->getAttribute('token')['data']->userId,
+            $request->getAttribute('id')
+        );
+        $useCase = new TransactionalApplicationService(
+            $this->deleteHistory, $this->transactionalSession
         );
         $responseDTO = $useCase->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 200);

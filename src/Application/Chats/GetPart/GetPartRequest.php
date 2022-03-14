@@ -21,12 +21,14 @@ class GetPartRequest implements BaseRequest {
     public $onlyUnread;
     /** @var mixed $fields */
     public $fields;
+    /** @var mixed $hideEmpty */
+    public $hideEmpty;
     
     /**
      * @param mixed $cursor
      * @param mixed $count
      */
-    function __construct(string $requesterId, string $userId, ?string $interlocutorId, $cursor, $count, $type, $messagesCount, $onlyUnread, $fields) {
+    function __construct(string $requesterId, string $userId, ?string $interlocutorId, $cursor, $count, $type, $messagesCount, $onlyUnread, $fields, $hideEmpty) {
         $this->requesterId = $requesterId;
         $this->userId = $userId;
         $this->interlocutorId = $interlocutorId;
@@ -36,6 +38,7 @@ class GetPartRequest implements BaseRequest {
         $this->messagesCount = $messagesCount;
         $this->onlyUnread = $onlyUnread;
         $this->fields = $fields;
+        $this->hideEmpty = $hideEmpty;
     }
 
 }

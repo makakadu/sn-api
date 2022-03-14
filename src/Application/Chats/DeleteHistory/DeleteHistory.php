@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace App\Application\Chats\DeleteMessage;
+namespace App\Application\Chats\DeleteHistory;
 
 use App\Application\BaseRequest;
 use App\Application\BaseResponse;
@@ -14,7 +14,7 @@ use Pusher\Pusher;
 use App\DataTransformer\Chats\ChatTransformer;
 use Doctrine\Common\Collections\Criteria;
 
-class DeleteMessage implements \App\Application\ApplicationService {
+class DeleteHistory implements \App\Application\ApplicationService {
     use \App\Application\AppServiceTrait;
     use \App\Application\Chats\ChatAppService;
     
@@ -43,32 +43,18 @@ class DeleteMessage implements \App\Application\ApplicationService {
                 break;
             }
         }
-        $message = $currentParticipant->messages()->get($request->messageId);
-        if(!$message) {
-            throw new \App\Application\Exceptions\NotExistException('Message not found');
-        }
-        $currentParticipant->messages()->remove($request->messageId);
+        $currentParticipant->clearHistory();
         $this->chats->flush();
-        
-        $criteria = Criteria::create();
-        $criteria->where(Criteria::expr()->eq("deletedForAll", false));
-        $criteria->orderBy(array('id' => Criteria::DESC));
-        $criteria->setMaxResults(1);
-        
-        $lastMessage = $currentParticipant->messages()->matching($criteria)->first();
-//        echo $lastMessage->id();exit();
         
         $this->pusher->trigger(
             'chat_' . $currentParticipant->user()->id(),
-            'delete-message',
+            'delete-history',
             [
-                'message_id' => $request->messageId,
-                'message_creator_id' => $message->creator()->id(),
-                'chat' => $this->chatTransformer->transform($requester, $chat, 0),
-                'last_message' => $lastMessage ? $this->transformer->transform($requester, $lastMessage) : null
+                'user_id' => $requester->id(),
+                'chat_id' => $chat->id(),
             ]
         );
         
-        return new DeleteMessageResponse("OK");
+        return new DeleteHistoryResponse("OK");
     }
 }

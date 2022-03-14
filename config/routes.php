@@ -80,6 +80,7 @@ return function (App $app) {
             $group->get('/{id}/messages', ChatsController::class . ":getMessagesPart");
             $group->patch('/{id}', ChatsController::class . ":patch");
             $group->delete('/{id}/messages/{messageId}', ChatsController::class . ":deleteMessage");
+            $group->delete('/{id}/messages', ChatsController::class . ":deleteHistory");
 //            $group->patch('/{id}', UserController::class . ":updateBan");
         });
         

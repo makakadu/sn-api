@@ -101,8 +101,10 @@ class Chat {
     
     function createMessage(User $creator, string $text, string $key): Message {
         $canCreate = false;
+        $creatorParticipant = null;
         foreach($this->participants as $participant) {
             if($participant->user()->equals($creator)) {
+                $creatorParticipant = $participant;
                 $canCreate = true;
             }
         }
@@ -114,6 +116,7 @@ class Chat {
         foreach($this->participants as $participant) {
             $participant->addMessage($message);
         }
+        $creatorParticipant->readMessage($message);
         return $message;
     }
     

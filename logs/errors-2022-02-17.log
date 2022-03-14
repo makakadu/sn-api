@@ -1,0 +1,4 @@
+[2022-02-17T11:05:13.825972+02:00] errors_handler_middleware.ERROR: File 'photo' should be passed  
+[2022-02-17T15:54:36.108071+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-02-17T16:00:55.565225+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-02-17T17:21:06.092891+02:00] errors_handler_middleware.ERROR: Incorrect email or password  
