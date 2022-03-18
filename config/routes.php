@@ -83,6 +83,7 @@ return function (App $app) {
             $group->delete('/{id}/messages', ChatsController::class . ":deleteHistory");
 //            $group->patch('/{id}', UserController::class . ":updateBan");
         });
+        $group->post('/typing-message', ChatsController::class . ":typingMessage");
         
         $group->group('/messages', function (Group $group) {
             $group->get('/{id}', ChatsController::class.':getMessage');

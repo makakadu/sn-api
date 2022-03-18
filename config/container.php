@@ -363,7 +363,7 @@ return [
 //            'password' => '08051993',
 //            'charset'  => 'utf8mb4'
 //        );
-        
+//        
         $conn = array(
             'driver'   => 'pdo_mysql',
             'host'     => 'd3y0lbg7abxmbuoi.chr7pe7iynqr.eu-west-1.rds.amazonaws.com:3306',

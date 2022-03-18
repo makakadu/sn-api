@@ -82,6 +82,12 @@ class ChatsController extends AbstractController {
      * @var \App\Application\Chats\GetMessagesPart\GetMessagesPart
      */
     private $getMessages;
+    
+    /**
+     * @Inject
+     * @var \App\Application\Chats\TypingMessage\TypingMessage
+     */
+    private $typingMessage;
  
     function create(Request $request, Response $response) {
         $parsedBody = $request->getParsedBody();
@@ -101,6 +107,23 @@ class ChatsController extends AbstractController {
         );
         $responseDTO = $useCase->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 201);
+    }
+ 
+    function typingMessage(Request $request, Response $response) {
+        $parsedBody = $request->getParsedBody();
+        
+        $this->failIfRequiredParamWasNotPassed(
+            $parsedBody, ['chat_id']
+        );
+        $requestDTO = new \App\Application\Chats\TypingMessage\TypingMessageRequest(
+            $request->getAttribute('token')['data']->userId,
+            $parsedBody['chat_id']
+        );
+        $useCase = new TransactionalApplicationService(
+            $this->typingMessage, $this->transactionalSession
+        );
+        $responseDTO = $useCase->execute($requestDTO);
+        return $this->prepareResponse($response, $responseDTO, 200);
     }
     
     function patch(Request $request, Response $response) {
