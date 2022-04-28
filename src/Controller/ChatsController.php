@@ -135,7 +135,7 @@ class ChatsController extends AbstractController {
             $request->getAttribute('id'),
             $parsedBody['property'],
             $parsedBody['value'],
-            $parsedBody['place_id']
+            isset($parsedBody['place_id']) ? $parsedBody['place_id'] : null
         );
         $responseDTO = $this->patch->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 200);
