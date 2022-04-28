@@ -12,6 +12,7 @@
         <field name="createdAt" column="created_at" type="datetime" />
         <field name="lastReadMessageId" column='last_read_message_id' type="string" nullable='true' />
         <field name="lastMessageId" column='last_message_id' type="string" nullable='true' />
+        <field name="userId" column='associated_user_id' type="string" />
 
         <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user" />
         <many-to-one target-entity="App\Domain\Model\Chats\Chat" field="chat" inversed-by="participants" orphan-removal='true' />

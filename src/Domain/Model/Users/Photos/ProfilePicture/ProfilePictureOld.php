@@ -11,7 +11,7 @@ use App\Domain\Model\Common\Reactable;
 use App\Domain\Model\Common\Shares\Shareable;
 use App\Domain\Model\Users\Comments\ProfileComment;
 
-class ProfilePicture extends \App\Domain\Model\Users\Photos\Photo implements Saveable, Shareable, Reactable {
+class ProfilePictureOld extends \App\Domain\Model\Users\Photos\Photo implements Saveable, Shareable, Reactable {
     use \App\Domain\Model\EntityTrait;
     use \App\Domain\Model\Common\PictureTrait;
     
@@ -36,10 +36,6 @@ class ProfilePicture extends \App\Domain\Model\Users\Photos\Photo implements Sav
     
     function getUpdatedAt(): \DateTime { // Без этого геттера с именно таким названием иногда происходит ошибка в Doctrine
         return $this->updatedAt;
-    }
-    
-    function user(): User {
-        return $this->user;
     }
     
     /** @return Collection<string, ProfileComment> */

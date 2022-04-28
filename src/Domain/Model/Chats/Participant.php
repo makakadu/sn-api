@@ -12,6 +12,7 @@ class Participant {
     use EntityTrait;
     
     private User $user;
+    private string $userId;
     private Collection $messages;
     private Chat $chat;
     private ?string $lastReadMessageId;
@@ -25,6 +26,7 @@ class Participant {
         $this->lastReadMessageId = null;
         $this->lastMessageId = null;
         $this->createdAt = new \DateTime('now');
+        $this->userId = $user->id();
     }
     
     function read(Message $message): void {
@@ -39,6 +41,14 @@ class Participant {
     
     function user(): User {
         return $this->user;
+    }
+    
+    function userId(): string {
+        return $this->userId;
+    }
+    
+    function getUserId(): string {
+        return $this->userId;
     }
     
     function addMessage(Message $message): void {

@@ -22,42 +22,18 @@ class Search implements \App\Application\ApplicationService {
     public function execute(BaseRequest $request): BaseResponse {
         $requester = $request->requesterId
             ? $this->findRequesterOrFail($request->requesterId) : null;
-//        echo $request->text;exit();
         $count = $request->count ? (int)$request->count : 20;
-        $users = $this->users->search($requester, $request->text, $request->cursor, $count+1);
         
+        $users = $this->users->search($requester, $request->text, $request->cursor, $count+1);
+
         $cursor = null;
         if((count($users) - $count) === 1) {
             $cursor = $users[count($users) -1]->id();
             array_pop($users);
         }
-        
-        $allCount = 222;
-        
-        $dtos = [];
-        if($request->full) {
-            foreach($users as $user) {
-                $dtos[] = $this->transformer->transform($requester, $user);
-            }
-        }
-        else {
-            foreach($users as $user) {
-                $picture = $user->currentPicture();
-                $pictureDTO = $picture
-                    ? $picture->versions()['cropped_small']
-                    : null;
+        $fields = is_null($request->fields) ? [] : explode(',', $request->fields);
+        $dtos = $this->transformer->transformMultiple($requester, $users, $fields);        
 
-                $dtos[] = [
-                    'id' => $user->id(),
-                    'firstname' => $user->firstName(),
-                    'lastname' => $user->lastName(),
-                    'username' => (string)$user->username(),
-                    'picture' => $pictureDTO
-                ];
-            }
-        }
-        
-
-        return new SearchResponse($dtos, $allCount, $cursor);
+        return new SearchResponse($dtos, 123, $cursor);
     }
 }

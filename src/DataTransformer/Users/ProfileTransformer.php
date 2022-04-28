@@ -29,10 +29,16 @@ class ProfileTransformer extends Transformer {
         $this->posts = $posts;
     }
     
-    function transformMultiple(?User $requester, array $profiles): array {
+    function transformMultiple(?User $requester, array $profiles, ?array $fields): array {
         $dtos = [];
-        foreach($profiles as $profile) {
-            $dtos[] = $this->transform($requester, $profile);
+        if(\count($fields)) {
+            foreach($profiles as $profile) {
+                $dtos[] = $this->transformPartial($requester, $profile, $fields);
+            }
+        } else {
+            foreach($profiles as $profile) {
+                $dtos[] = $this->transform($requester, $profile);
+            }
         }
         return $dtos;
     }
@@ -40,7 +46,7 @@ class ProfileTransformer extends Transformer {
     function transformMultipleToSubscriberDTO(array $profiles): array {
         $dtos = [];
         foreach($profiles as $profile) {
-            $picture = $profile->currentPicture();
+            $picture = $profile->picture();
             
             $dtos[] = new \App\DTO\Users\SubscriberDTO(
                 $profile->id(),
@@ -53,10 +59,9 @@ class ProfileTransformer extends Transformer {
         return $dtos;
     }
     
-    
     function transform(?User $requester, User $profile): ActiveProfileDTO {
-        
-        $picture = $profile->currentPicture();
+
+        $currentPicture = $profile->currentPicture();
         $cover = $profile->currentCover();
         
         $birthday = $profile->birthday();
@@ -89,8 +94,7 @@ class ProfileTransformer extends Transformer {
             }
             
             $subscriptionDTO = null;
-            
-            $subscription = $this->subscriptions->getByUsersIds($requester->id(), $profile->id());
+            $subscription = null; //$this->subscriptions->getByUsersIds($requester->id(), $profile->id());
             
             if($subscription) {
                 $subscriptionsTrans = new SubscriptionTransformer();
@@ -100,17 +104,17 @@ class ProfileTransformer extends Transformer {
             $acceptMessages = false;
         }
         
-        $postsCount = $this->posts->getCountOfActiveAndAccessibleToRequesterByOwner($requester, $profile);
+        $postsCount = 0;//$this->posts->getCountOfActiveAndAccessibleToRequesterByOwner($requester, $profile);
         
         $picturesDTOs = [];
-        foreach($profile->pictures() as $picture) {
-            $picturesDTOs[] = new \App\DTO\Users\PictureDTO(
-                    $picture->id(),
-                    $picture->versions(),
-                    null,
-                    $this->creationTimeToTimestamp($picture->createdAt())
-            );
-        }
+//        foreach($profile->pictures() as $picture) {
+//            $picturesDTOs[] = new \App\DTO\Users\PictureDTO(
+//                    $picture->id(),
+//                    $picture->versions(),
+//                    null,
+//                    $this->creationTimeToTimestamp($picture->createdAt())
+//            );
+//        }
         $coversDTOs = [];
         $coverTrans = new CoverTransformer();
         foreach($profile->covers() as $cover) {
@@ -119,11 +123,11 @@ class ProfileTransformer extends Transformer {
         
         return new ActiveProfileDTO(
             $profile->id(),
-            $picture ? new \App\DTO\Users\PictureDTO(
-                $picture->id(),
-                $picture->versions(),
+            $currentPicture ? new \App\DTO\Users\PictureDTO(
+                $currentPicture->id(),
+                $currentPicture->versions(),
                 null,
-                $this->creationTimeToTimestamp($picture->createdAt())
+                $this->creationTimeToTimestamp($currentPicture->createdAt())
             ) : null,
             $cover ? (new CoverTransformer())->transform($cover) : null,
             $profile->firstName(),
@@ -142,6 +146,79 @@ class ProfileTransformer extends Transformer {
             $picturesDTOs,
             $coversDTOs
         );
+    }
+    
+    function transformPartial(User $requester, User $user, array $fields): \App\DTO\Users\PartialProfileDTO {
+        $dto = new \App\DTO\Users\PartialProfileDTO($user->id());        
+        
+        if(\in_array('firstname', $fields)) {
+            $dto->firstName = $user->firstName();
+        }
+        if(\in_array('lastname', $fields)) {
+            $dto->lastName = $user->lastName();
+        }
+        if(\in_array('picture', $fields)) {
+            $currentPicture = $user->currentPicture();
+            $pictureDTO = $currentPicture ? new \App\DTO\Users\PictureDTO(
+                $currentPicture->id(),
+                $currentPicture->versions(),
+                null,
+                $this->creationTimeToTimestamp($currentPicture->createdAt())
+            ) : null;
+            $dto->picture = $pictureDTO;
+        }
+        if(\in_array('cover', $fields)) {
+            $dto->cover = $user->currentCover();
+        }
+        if(\in_array('username', $fields)) {
+            $dto->username = (string)$user->username();
+        }
+        if(\in_array('gender', $fields)) {
+            $dto->gender = $user->gender();
+        }
+        if(\in_array('city', $fields)) {
+            $dto->gender = "";
+        }
+        if(\in_array('country', $fields)) {
+            $dto->gender = "";
+        }
+        if(\in_array('status', $fields)) {
+            $dto->status = "";
+        }
+        if(\in_array('connection', $fields)) {
+            $connectionDTO = null;
+            if($requester) {
+                $connection = $this->connections->getByUsersIds($requester->id(), $user->id());
+
+                if($connection) {
+                    $connsTrans = new ConnectionTransformer();
+                    $connectionDTO = $connsTrans->transform($connection);
+                }
+            }
+            $dto->connection = $connectionDTO;
+        }
+        if(\in_array('subscription', $fields)) {
+            $subscriptionDTO = null;
+            if($requester) {
+                $subscription = null; //$this->subscriptions->getByUsersIds($requester->id(), $profile->id());
+            
+                if($subscription) {
+                    $subscriptionsTrans = new SubscriptionTransformer();
+                    $subscriptionDTO = $subscriptionsTrans->transform($subscription);
+                }
+            }
+            $dto->subscription = $subscriptionDTO;
+        }
+        if(\in_array('banned', $fields)) {
+            $dto->banned = $user->inBlacklist($requester);
+        }
+        if(\in_array('acceptMessages', $fields)) {
+            $dto->acceptMessages = true;
+        }
+        if(\in_array('postsCount', $fields)) {
+            $dto->postsCount = 1234;
+        }
+        return $dto;
     }
 
 }

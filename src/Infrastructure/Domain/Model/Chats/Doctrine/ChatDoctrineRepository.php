@@ -13,6 +13,201 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
     public function getById(string $id): ?Chat {
         return $this->entityManager->find($this->entityClass, $id);
     }
+    
+    public function getChatsOfUserTest(User $user, ?string $interlocutorId, ?string $cursor, int $count, ?string $type, bool $onlyUnread): array {
+        
+        $cursorClause = $cursor ? "
+           AND
+           (
+                SELECT message22.id
+                FROM chat_messages AS message22
+                WHERE message22.id IN (
+                    SELECT pm5.message_id
+                    FROM participants_messages AS pm5
+                    WHERE pm5.participant_id = (
+                        SELECT cp5.id
+                        FROM chat_participants AS cp5
+                        WHERE cp5.chat_id = chat.id
+                        AND cp5.user_id = '{$user->id()}'
+                    )
+                )
+                AND message22.chat_id = chat.id
+                AND message22.deleted_for_all = 0
+                ORDER BY message22.id DESC
+                LIMIT 1 
+           )
+           <= '$cursor'
+        " : "";
+                
+        $isParticipant = "
+            SELECT count(cp3.id)
+            FROM chat_participants AS cp3
+            WHERE cp3.chat_id = chat.id
+            AND cp3.user_id = '{$user->id()}'
+            LIMIT 1
+        ";
+            
+        $interlocutorClause = $interlocutorId ? "
+            AND (
+                SELECT count(cp4.id)
+                FROM chat_participants AS cp4
+                WHERE cp4.chat_id = chat.id
+                AND cp4.user_id = '$interlocutorId'
+                LIMIT 1
+            ) = 1
+        " : "";
+        
+        $typeClause = $type ? "AND type = '$type'" : "";
+        
+        $isUnreadClause = $onlyUnread ?
+            "AND (
+                SELECT message23.id
+                FROM chat_messages AS message23
+                WHERE message23.id IN (
+                    SELECT pm5.message_id
+                    FROM participants_messages AS pm5
+                    WHERE pm5.participant_id = (
+                        SELECT cp5.id
+                        FROM chat_participants AS cp5
+                        WHERE cp5.chat_id = chat.id
+                        AND cp5.user_id = '{$user->id()}'
+                    )
+                )
+                AND message23.chat_id = chat.id
+                AND message23.deleted_for_all = 0
+                ORDER BY message23.id DESC
+                LIMIT 1 
+            ) >
+            (
+                SELECT cp6.last_read_message_id
+                FROM chat_participants AS cp6
+                WHERE cp6.chat_id = chat.id
+                AND cp6.user_id = '{$user->id()}'
+            )"
+            : "";
+                    
+
+        $sql = "
+            SELECT
+            chat.id as chatId,
+            (
+                SELECT message.id
+                FROM chat_messages AS message
+                WHERE message.id IN (
+                    SELECT pm1.message_id
+                    FROM participants_messages AS pm1
+                    WHERE pm1.participant_id = (
+                        SELECT cp1.id
+                        FROM chat_participants AS cp1
+                        WHERE cp1.chat_id = chat.id
+                        AND cp1.user_id = '{$user->id()}'
+                    )
+                )
+                AND message.chat_id = chat.id
+                AND message.deleted_for_all = 0
+                ORDER BY message.id DESC
+                LIMIT 1
+            ) as last_active_message_id
+            FROM chats AS chat
+            WHERE (
+                SELECT count(message2.id)
+                FROM chat_messages AS message2
+                WHERE message2.id IN (
+                    SELECT pm2.message_id
+                    FROM participants_messages AS pm2
+                    WHERE pm2.participant_id = (
+                        SELECT cp2.id
+                        FROM chat_participants AS cp2
+                        WHERE cp2.chat_id = chat.id
+                        AND cp2.user_id = '{$user->id()}'
+                    )
+                )
+                AND message2.chat_id = chat.id
+                AND message2.deleted_for_all = 0
+                LIMIT 1
+            ) > 0
+            AND ($isParticipant) = 1
+            $interlocutorClause
+            $typeClause
+            $isUnreadClause
+            $cursorClause
+            ORDER BY last_active_message_id DESC
+            LIMIT $count
+        ";
+                        
+        $em = $this->entityManager;
+        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm->addScalarResult('chatId', 'chatId');
+        $rsm->addScalarResult('last_active_message_id', 'last_active_message_id');
+        $query = $em->createNativeQuery($sql, $rsm);
+        $res = $query->getArrayResult();
+//        print_r($res);exit();
+        $ids = [];
+        $lastMessagesIds = [];
+        foreach ($res as $resItem) {
+            $ids[] = $resItem['chatId'];
+            $lastMessagesIds[$resItem['chatId']] = $resItem['last_active_message_id'];
+        }
+//        print_r($ids);
+//        echo '_________';exit();
+//        print_r($lastMessagesIds);
+//        exit();
+//        print_r($lastMessagesIds);exit();
+        $chats = $em->getRepository($this->entityClass)->findBy(['id' => $ids]);
+        foreach($chats as $chat) {
+            $chat->sortValue = $lastMessagesIds[$chat->id()];
+        }
+        $sortedChats = [];
+        foreach($ids as $id) {
+            foreach ($chats as $chat) {
+                if($chat->id() === $id) {
+                    $sortedChats[] = $chat;
+                    break;
+                }
+            }
+        }
+
+        return $sortedChats;
+//        print_r($ids);exit();
+        
+//        $test = "
+//            SELECT
+//            chat.id,
+//            (
+//                SELECT message.id FROM chat_messages AS message
+//                WHERE message.id IN (
+//                    SELECT pm1.message_id
+//                    FROM participants_messages AS pm1
+//                    WHERE pm1.participant_id = (
+//                        SELECT cp1.id FROM chat_participants AS cp1
+//                        WHERE cp1.chat_id = chat.id
+//                        AND cp1.user_id = '01fwhnqn51xsde0t9hh582bav6'
+//                    )
+//                )
+//                AND message.chat_id = chat.id
+//                AND message.deleted_for_all = 0
+//                ORDER BY message.id DESC
+//                LIMIT 1
+//            ) as message_id
+//            FROM chats AS chat
+//            # lolkek
+//            WHERE (
+//                SELECT count(message2.id) FROM chat_messages AS message2
+//                WHERE message2.id IN (
+//                    SELECT pm2.message_id
+//                    FROM participants_messages AS pm2
+//                    WHERE pm2.participant_id = (
+//                        SELECT cp2.id FROM chat_participants AS cp2
+//                        WHERE cp2.chat_id = chat.id
+//                        AND cp2.user_id = '01fwhnqn51xsde0t9hh582bav6'
+//                    )
+//                )
+//                AND message2.chat_id = chat.id
+//                AND message2.deleted_for_all = 0
+//                LIMIT 1
+//            ) > 0
+//        ";
+    }
 
 //    public function getPartOfUser(User $user, ?string $interlocutorId, ?string $cursor, int $count, string $order): array {
 //        
@@ -114,6 +309,49 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
             $qb->setParameter('type', $type);
         }
         $qb->setParameter('user_id', $user->id());
+            
+        $res = $qb->getQuery()
+            //->useQueryCache(true)
+            //->setResultCacheId('kek')
+            //->useResultCache(true, 3600, 'kek')
+            ->getResult();
+//        echo count($res);exit();
+        return $res;
+    }
+    
+    public function getActionsForUser(User $user, ?string $types, ?int $cursor, ?int $count): array {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('a')->from(\App\Domain\Model\Chats\Action::class, 'a');
+        
+        if($types) {
+            $typesArr = \explode(',', $types);
+            
+            if(in_array('1', $typesArr)) {
+                $qb->where('a.type = 1');
+            }
+            if(in_array('3', $typesArr)) {
+                $qb->orWhere('a.type = 3');
+            }
+            if(in_array('2', $typesArr)) {
+                $qb->orWhere("a.type = 2 AND a.initiatorId = :user_id");
+                $qb->setParameter('user_id', $user->id());
+            }
+        } else {
+            $qb->where('a.type = 1');
+            $qb->orWhere("a.type = 2 AND a.initiatorId = :user_id");
+            $qb->orWhere('a.type = 3');
+            $qb->setParameter('user_id', $user->id());
+        }
+        
+        if($cursor) {
+            $cursorDate = new \DateTime();
+            $cursorDate->setTimestamp($cursor);
+            $qb->andWhere('a.createdAt >= :cursorDate');
+            $qb->setParameter('cursorDate', $cursorDate);
+        }
+        if($count) {
+            $qb->setMaxResults($count);
+        }
             
         $res = $qb->getQuery()
             //->useQueryCache(true)

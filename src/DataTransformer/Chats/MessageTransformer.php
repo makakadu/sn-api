@@ -28,11 +28,11 @@ class MessageTransformer extends Transformer {
         
         return new MessageDTO(
             $message->id(),
+            $message->clientId(),
             $this->creatorToDTO($message->creator()),
             $message->chat()->id(),
             $message->text(),
             $this->creationTimeToTimestamp($message->createdAt()),
-            $message->key(),
             $isReadBy
         );
     }

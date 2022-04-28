@@ -6,6 +6,7 @@ use App\DTO\CreatorDTO;
 
 class ChatDTO implements ChatDTOInterface {
     public string $id;
+    public string $clientId;
     public array $participants;
     public string $startedBy;
     public int $createdAt;
@@ -18,6 +19,7 @@ class ChatDTO implements ChatDTOInterface {
     
     public function __construct(
         string $id,
+        string $clientId,
         array $participants,
         string $type,
         string $startedBy,
@@ -29,6 +31,7 @@ class ChatDTO implements ChatDTOInterface {
         int $unreadMessagesCount
     ) {
         $this->id = $id;
+        $this->clientId = $clientId;
         $this->participants = $participants;
         $this->type = $type;
         $this->startedBy = $startedBy;

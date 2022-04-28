@@ -33,28 +33,19 @@ class DeleteMessage implements \App\Application\ApplicationService {
     
     public function execute(BaseRequest $request): BaseResponse {
 //        $this->validateRequest($request);
-        
         $requester = $this->findRequesterOrFail($request->requesterId);
         $chat = $this->findChatOrFail($request->chatId, true);
-        $currentParticipant = null;
-        foreach($chat->participants() as $participant) {
-            if($participant->user()->equals($requester)) {
-                $currentParticipant = $participant;
-                break;
-            }
-        }
-        $message = $currentParticipant->messages()->get($request->messageId);
-        if(!$message) {
-            throw new \App\Application\Exceptions\NotExistException('Message not found');
-        }
-        $currentParticipant->messages()->remove($request->messageId);
+        $chat->removeMessageFor($request->messageId, $requester);
         $this->chats->flush();
+        
+        $message = $chat->messages()->get($request->messageId);
         
         $criteria = Criteria::create();
         $criteria->where(Criteria::expr()->eq("deletedForAll", false));
         $criteria->orderBy(array('id' => Criteria::DESC));
         $criteria->setMaxResults(1);
         
+        $currentParticipant = $chat->getParticipantByUserId($requester->id());
         $lastMessage = $currentParticipant->messages()->matching($criteria)->first();
 //        echo $lastMessage->id();exit();
         
@@ -62,7 +53,10 @@ class DeleteMessage implements \App\Application\ApplicationService {
             'chat_' . $currentParticipant->user()->id(),
             'delete-message',
             [
+                'chat_id' => $chat->id(),
+                'chat_unique_key' => $chat->getUniqueKey(),
                 'message_id' => $request->messageId,
+                'message_client_id' => $message->clientId(),
                 'message_creator_id' => $message->creator()->id(),
                 'chat' => $this->chatTransformer->transform($requester, $chat, 0),
                 'last_message' => $lastMessage ? $this->transformer->transform($requester, $lastMessage) : null

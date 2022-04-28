@@ -24,8 +24,8 @@
         
         <discriminator-column name="discr" type="string"/>
         <discriminator-map>
-            <discriminator-mapping value="user_album_photo" class="App\Domain\Model\Users\Photos\AlbumPhoto\AlbumPhoto"/>
             <discriminator-mapping value="profile_picture" class="App\Domain\Model\Users\Photos\ProfilePicture\ProfilePicture"/>
+            <discriminator-mapping value="user_album_photo" class="App\Domain\Model\Users\Photos\AlbumPhoto\AlbumPhoto"/>
             <discriminator-mapping value="profile_covers" class="App\Domain\Model\Users\Photos\Cover\Cover"/>
         </discriminator-map>
         

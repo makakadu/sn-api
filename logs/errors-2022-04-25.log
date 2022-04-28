@@ -1,0 +1,8 @@
+[2022-04-25T13:25:54.937855+03:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-04-25T13:26:14.445964+03:00] errors_handler_middleware.ERROR: Incorrect email or password  
+[2022-04-25T13:51:44.851739+03:00] errors_handler_middleware.ERROR: Message not found  
+[2022-04-25T19:26:29.242706+03:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-04-25T19:33:14.252825+03:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-04-25T19:33:38.336534+03:00] errors_handler_middleware.ERROR: Chat 01g1g4gb56j9j32e7dnaywhkdv not found  
+[2022-04-25T21:12:57.444061+03:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  
+[2022-04-25T21:13:17.949462+03:00] errors_handler_middleware.ERROR: Chat 01g1g4gb56j9j32e7dnaywhkdv not found  

@@ -12,16 +12,19 @@ class Chat {
     use EntityTrait;
     private Collection $participants;
     private Collection $messages;
+    private Collection $actions;
     private array $events = [];
     private string $uniqueKey;
     private string $type;
     private string $startedBy;
     private ?string $unreadCursor = null;
+    private string $clientId;
 //    private string $lastActivityId;
 
-    function __construct(User $creator, array $otherParticipants, string $type, ?string $text, string $frontKey) {
+    function __construct(string $clientId, User $creator, array $otherParticipants, string $type, ?string $text, string $messageClientId) {
         $this->id = (string)Ulid::generate(true);
 //        $this->lastActivityId = $this->id;
+        $this->clientId = $clientId;
         $this->startedBy = $creator->id();
         
         if(!in_array($type, ['pair_user_chat', 'group_user_chat'])) {
@@ -40,6 +43,8 @@ class Chat {
             throw new \InvalidArgumentException('Only 2 participants can be in PAIR chat');
         }
         $this->messages = new ArrayCollection();
+        $this->actions = new ArrayCollection();
+        
         $this->createdAt = new \DateTime('now');
         $this->type = $type;
         
@@ -54,28 +59,72 @@ class Chat {
             $this->uniqueKey = (string)Ulid::generate(true);
         }
         if($text) {
-            $this->createMessage($creator, $text, $frontKey);
+            $this->createMessage($creator, $text, $messageClientId);
         }
     }
     
-    function read(User $requester, Message $message): void {
-        $currentParticipant = null;
+    function getUniqueKey(): string {
+        return $this->uniqueKey;
+    }
+    
+    function addAction(User $initiator, int $type, string $messageId, string $messageClientId, string $creatorId): void  {
+        $this->actions->add(new Action($this, $initiator, $type, $messageId, $messageClientId, $creatorId));
+    }
+    
+//    function getActionsForUser(User $user, ?string $cursor, ?int $count): Collection {
+//        $cursorDate = new \DateTime();
+//        $cursorDate->setTimestamp($cursor);
+//        
+//        $criteria = Criteria::create();
+//        $criteria->where(Criteria::expr()->eq("type", 1));
+//        $criteria->orWhere(Criteria::expr()->eq("type", 2));
+//        $criteria->where(Criteria::expr()->eq("type", 3));
+//        if($cursor) {
+//            $criteria->andWhere(Criteria::expr()->gte('createdAt', $cursorDate));
+//        }
+//        if($count) {
+//            $criteria->setMaxResults($count);
+//        }
+// 
+//
+//        $actions = $this->actions->matching($criteria);
+//    }
+    
+    function clientId(): string {
+        return $this->clientId;
+    }
+    
+    function isParticipant(User $user): bool {
         foreach($this->participants as $participant) {
-            if($participant->user()->equals($requester)) {
-                $currentParticipant = $participant;
-                break;
+            if($participant->userId() === $user->id()) {
+                return true;
             }
         }
+        return false;
+    }
+    
+    function getParticipantByUserId(string $userId): ?Participant {
+        foreach($this->participants as $participant) {
+            if($participant->userId() === $userId) {
+                return $participant;
+            }
+        }
+        return null;
+    }
+    
+    function read(User $requester, Message $message): void {
+        $currentParticipant = $this->getParticipantByUserId($requester->id());
+        
         if(!$currentParticipant) {
             throw new \App\Application\Exceptions\ForbiddenException(228, 'No rights');
         }
         if(!$this->messages->contains($message)) {
             throw new \App\Domain\Model\DomainExceptionAlt(['message' => "Message {$message->id()} not found in current chat"]);
         }
-        if(!$participant->messages()->contains($message)) {
+        if(!$currentParticipant->messages()->contains($message)) {
             throw new \App\Domain\Model\DomainExceptionAlt(['message' => "Message {$message->id()} deleted for current user"]);
         }
-        $participant->read($message);
+        $currentParticipant->read($message);
     }
     
     function type(): string {
@@ -99,33 +148,32 @@ class Chat {
         $this->participants->remove($participantId);
     }
     
-    function createMessage(User $creator, string $text, string $key): Message {
-        $canCreate = false;
-        $creatorParticipant = null;
-        foreach($this->participants as $participant) {
-            if($participant->user()->equals($creator)) {
-                $creatorParticipant = $participant;
-                $canCreate = true;
-            }
-        }
-        if(!$canCreate) {
+    function createMessage(User $creator, string $text, string $clientId): Message {
+        $creatorParticipant = $this->getParticipantByUserId($creator->id());
+        if(!$creatorParticipant) {
             throw new \App\Application\Exceptions\ForbiddenException(228, 'No rights');
         }
-        $message = new Message($creator, $this, $text, $key);
+        $message = new Message($clientId, $creator, $this, $text);
         $this->messages->add($message);
         foreach($this->participants as $participant) {
             $participant->addMessage($message);
         }
         $creatorParticipant->readMessage($message);
+        $this->actions->add(new Action($this, $creator, Action::CREATE_MESSAGE, $message->id(), $message->clientId(), $message->creator()->id()));
         return $message;
     }
     
     function removeMessageFor(string $messageId, User $user): void {
-        $message = $this->messages->get($messageId);
+        $participant = $this->getParticipantByUserId($user->id());
+        if(!$participant) {
+            throw new \App\Application\Exceptions\ForbiddenException(228, 'No rights');
+        }
+        $message = $participant->messages()->get($messageId);
         if(!$message) {
             throw new \App\Application\Exceptions\NotExistException('Message not found');
         }
-        $message->removeForUser($user);
+        $participant->messages()->remove($messageId);
+        $this->actions->add(new Action($this, $user, Action::DELETE_MESSAGE, $message->id(), $message->clientId(), $message->creator()->id()));
 //
 //        $criteria = Criteria::create();
 //        $criteria
@@ -149,6 +197,7 @@ class Chat {
             throw new \App\Application\Exceptions\NotExistException('Message not found');
         }
         $message->deleteForAll($initiator);
+        $this->actions->add(new Action($this, $initiator, Action::DELETE_MESSAGE_FOR_ALL, $message->id(), $message->clientId(), $message->creator()->id()));
 
 //        $criteria = Criteria::create();
 //        $criteria

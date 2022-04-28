@@ -7,14 +7,14 @@ class SearchRequest implements \App\Application\BaseRequest {
     public string $text;
     public $cursor;
     public $count;
-    public $full;
+    public $fields;
     
-    public function __construct(?string $requesterId, string $text, $cursor, $count, $full) {
+    public function __construct(?string $requesterId, string $text, $cursor, $count, $fields) {
         $this->requesterId = $requesterId;
         $this->text = $text;
         $this->cursor = $cursor;
         $this->count = $count;
-        $this->full = $full;
+        $this->fields = $fields;
     }
 
 }

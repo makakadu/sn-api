@@ -322,10 +322,7 @@ class UserController extends AbstractController {
             $request->getAttribute('token')['data']['userId'],
             $request->getAttribute('id')
         );
-        $useCase = new TransactionalApplicationService(
-            $this->getProfile, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->getProfile->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO);
     }
     
@@ -337,12 +334,10 @@ class UserController extends AbstractController {
             isset($queryParams['query']) ? $queryParams['query'] : '',
             isset($queryParams['cursor']) ? $queryParams['cursor'] : null,
             isset($queryParams['count']) ? $queryParams['count'] : null,
-            isset($queryParams['full-profile']) ? $queryParams['full-profile'] : null,
+            isset($queryParams['fields']) ? $queryParams['fields'] : null,
         );
-        $useCase = new TransactionalApplicationService(
-            $this->search, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+
+        $responseDTO = $this->search->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO);
     }
     

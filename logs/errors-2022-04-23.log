@@ -1,0 +1,2 @@
+[2022-04-23T13:23:37.182393+03:00] errors_handler_middleware.ERROR: Chat -1 not found  
+[2022-04-23T19:18:53.555197+03:00] errors_handler_middleware.ERROR: AUTHENTICATED_USER_NOT_FOUND  

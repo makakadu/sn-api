@@ -43,13 +43,7 @@ class PatchMessage implements \App\Application\ApplicationService {
             $this->messages->flush();
             
             $chat = $message->chat();
-            $currentParticipant = null;
-            foreach($chat->participants() as $participant) {
-                if($participant->user()->equals($requester)) {
-                    $currentParticipant = $participant;
-                    break;
-                }
-            }
+            $currentParticipant = $chat->getParticipantByUserId($requester->id());
             
             $criteria = Criteria::create();
             $criteria->where(Criteria::expr()->eq("deletedForAll", 0));
@@ -63,6 +57,9 @@ class PatchMessage implements \App\Application\ApplicationService {
                 'message-deleted-for-all',
                 [
                     'chat' => $this->trans->transform($requester, $message->chat(), 0),
+                    'chat_client_id' => $chat->clientId(),
+                    'chat_unique_key' => $chat->getUniqueKey(),
+                    'message_client_id' => $message->clientId(),
                     'message_id' => $message->id(),
                     'message_creator_id' => $message->creator()->id(),
                     'last_message' => $lastMessage ? $this->messagesTrans->transform($requester, $lastMessage) : null

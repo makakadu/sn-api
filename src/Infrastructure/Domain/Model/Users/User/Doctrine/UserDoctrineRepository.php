@@ -11,6 +11,7 @@ use App\Domain\Model\Relationship\Relationship;
 use App\Domain\Model\Users\Friendship\Friendship;
 use Doctrine\ORM\QueryBuilder;
 use App\Infrastructure\Domain\Model\Users\Friendship\Doctrine\FriendshipDoctrineRepository;
+use Doctrine\ORM\Query;
 
 class UserDoctrineRepository extends AbstractDoctrineRepository implements UserRepository {
 
@@ -31,7 +32,14 @@ class UserDoctrineRepository extends AbstractDoctrineRepository implements UserR
 //        return $result;
     }
     
-    public function getByUsername(string $username): ?User{
+    function getByUsername2(string $username): ?User {
+        $result = $this->entityManager->getRepository($this->entityClass)
+            ->findBy(array('username.username' => $username)); // Поиск по embeddable (https://github.com/laravel-doctrine/fluent/issues/51)
+        
+        return count($result) ? $result[0] : null;
+    }
+    
+    public function getByUsername(string $username): ?User {
 //        return $this->entityManager->getRepository($this->entityClass)
 //            ->findBy(array('username.username' => $username));
         $qb = $this->entityManager->createQueryBuilder();
@@ -48,7 +56,92 @@ class UserDoctrineRepository extends AbstractDoctrineRepository implements UserR
         return $result;
     }
     
+//    /**
+//     * @param array<string> $ids
+//     * @return array<object>
+//     */
+//    function getByIds(array $ids): array {
+//        $qb = $this->entityManager->createQueryBuilder();
+//        $qb
+//            ->select('u')
+//            ->from(User::class, 'u')
+//            ->where($qb->expr()->in('u.id', ':data'))
+//            ->setParameter('data', $ids);
+//            
+//        $query = $qb->getQuery();
+//            //->useQueryCache(true)
+//            //->setResultCacheId('kek')
+//            //->useResultCache(true, 3600, 'kek')
+//        return $query->getResult();
+//    }
+    
+    function foundIdsToArray(array $foundIds): array {
+        $arr = [];
+        foreach($foundIds as $id) {
+            $arr[] = $id['id'];
+        }
+        return $arr;
+    }
+    
     function search(User $requester, string $text, ?string $cursor, int $count) {
+        $trimmed = trim($text);
+        $trimmedAndUpper = mb_strtoupper($trimmed);
+        
+        if($trimmed === '') {
+            $qb = $this->entityManager->createQueryBuilder();
+            $qb->select('u.id')
+                ->from(User::class, 'u')
+                ->where("u.id != :requesterId");
+            if($cursor) {
+                $qb->andWhere("u.id >= '{$cursor}'");
+            }
+            $qb->setParameter('requesterId', $requester->id());
+            $qb->setMaxResults($count);
+            $query = $qb->getQuery();
+            $result = $query->getResult();
+            $ids = $this->foundIdsToArray($result);
+            return $this->getByIds($ids);
+        }
+        $exploded = \explode(' ', $trimmedAndUpper);
+        
+        if(\count($exploded) > 1) {
+            $firstWord = $exploded[0];
+            $secondWord = $exploded[1];
+            
+            $qb = $this->entityManager->createQueryBuilder();
+            $qb->select('u.id')
+                ->from(User::class, 'u')
+                ->where("upper(u.firstName) LIKE '%{$firstWord}%' AND upper(u.lastName) LIKE '%{$secondWord}%'")
+                ->orWhere("upper(u.firstName) LIKE '%{$secondWord}%' AND upper(u.lastName) LIKE '%{$firstWord}%'")
+                ->andWhere("u.id != '{$requester->id()}'");
+            
+            if($cursor) {
+                $qb->andWhere("u.id >= '{$cursor}'");
+            }
+            $qb->setMaxResults($count);
+            $query = $qb->getQuery();
+            $result = $query->getResult();
+            $ids = $this->foundIdsToArray($result);
+            return $this->getByIds($ids);
+        } else {
+            $qb = $this->entityManager->createQueryBuilder();
+            $qb
+                ->select('u.id')
+                ->from(User::class, 'u')
+                ->where("upper(u.firstName) LIKE '%{$trimmedAndUpper}%' OR upper(u.lastName) LIKE '%{$trimmedAndUpper}%'")
+                ->andWhere("u.id != '{$requester->id()}'");
+            if($cursor) {
+                $qb->andWhere("u.id >= '{$cursor}'");
+            }
+            $qb->setMaxResults($count);
+            $query = $qb->getQuery();
+            $result = $query->getResult();
+            $ids = $this->foundIdsToArray($result);
+            return $this->getByIds($ids);
+        }
+    }
+    
+    function searchOld(User $requester, string $text, ?string $cursor, int $count) {
         
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
@@ -142,10 +235,7 @@ class UserDoctrineRepository extends AbstractDoctrineRepository implements UserR
 //        }
     }
     
-    function getByUsername2(string $username) {
-        return $this->entityManager->getRepository($this->entityClass)
-            ->findBy(array('username.username' => $username)); // Поиск по embeddable (https://github.com/laravel-doctrine/fluent/issues/51)
-    }
+
     
     function getCommonContacts(User $user, User $commonWith, ?string $cursor, int $count) {
         $qb1 = $this->entityManager->createQueryBuilder();

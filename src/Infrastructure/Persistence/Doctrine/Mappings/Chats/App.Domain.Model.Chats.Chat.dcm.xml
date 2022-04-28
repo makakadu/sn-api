@@ -11,6 +11,7 @@
         
         <unique-constraints>
             <unique-constraint columns="unique_key" name="unique_pair_chat" />
+            <unique-constraint columns="client_id" name="unique_chat_client_id" />
         </unique-constraints>
         
         <id name="id" type="string">
@@ -19,15 +20,20 @@
         <field name="createdAt" column="created_at" type="datetime" />
         <field name="type" type="string" />
         <field name="startedBy" column='started_by' type="string" />
+        <field name="clientId" column='client_id' type="string" />
         
 <!--        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user1" />
         <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user2" />-->
 
-        <one-to-many target-entity="App\Domain\Model\Chats\Participant" field="participants" mapped-by="chat" index-by="id">
+        <one-to-many target-entity="App\Domain\Model\Chats\Participant" field="participants" mapped-by="chat" index-by="id" fetch="EAGER" >
             <cascade><cascade-all/></cascade>
         </one-to-many>
 
         <one-to-many target-entity="App\Domain\Model\Chats\Message" field="messages" mapped-by="chat" index-by="id">
+            <cascade><cascade-all/></cascade>
+        </one-to-many>
+        
+        <one-to-many target-entity="App\Domain\Model\Chats\Action" field="actions" mapped-by="chat">
             <cascade><cascade-all/></cascade>
         </one-to-many>
 <!--        <many-to-many target-entity="App\Domain\Model\Users\User\User" field="participants" index-by="id" >

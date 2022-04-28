@@ -11,15 +11,19 @@ class PatchRequest implements BaseRequest {
     public $property;
     /** @var mixed $value */
     public $value;
+    /** @var mixed $placeId */
+    public $placeId;
     
     /**
      * @param mixed $property
      * @param mixed $value
+     * @param mixed $placeId
      */
-    function __construct(string $requesterId, string $chatId, $property, $value) {
+    function __construct(string $requesterId, string $chatId, $property, $value, $placeId) {
         $this->requesterId = $requesterId;
         $this->chatId = $chatId;
         $this->property = $property;
         $this->value = $value;
+        $this->placeId = $placeId;
     }
 }

@@ -1,0 +1,3 @@
+[2022-03-23T14:54:57.368393+02:00] errors_handler_middleware.ERROR: Chat -1 not found  
+[2022-03-23T14:55:17.197088+02:00] errors_handler_middleware.ERROR: Chat -1 not found  
+[2022-03-23T14:59:10.968123+02:00] errors_handler_middleware.ERROR: No rights  

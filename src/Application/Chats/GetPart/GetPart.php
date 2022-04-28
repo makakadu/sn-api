@@ -23,7 +23,10 @@ class GetPart implements \App\Application\ApplicationService {
         $this->chatTransformer = $chatTransformer;
     }
     
-    public function execute(BaseRequest $request): GetPartResponse {
+    public function execute2(BaseRequest $request): GetPartResponse {
+        if($request->onlyUnread) {
+            exit();
+        }
         $requester = $this->findRequesterOrFail($request->requesterId);
         
         $user = $this->findUserOrFail($request->userId, true, null);
@@ -31,11 +34,11 @@ class GetPart implements \App\Application\ApplicationService {
         if(!$requester->equals($user)) {
            throw new \App\Application\Exceptions\ForbiddenException(228, "No rights"); 
         }
-        
+        exit();
         $cursor = null;
         $count = !is_null($request->count) ? (int)$request->count : 20;
         $count++;
-        
+
         $chats = $this->chats->getPartOfUser2(
             $user, $request->interlocutorId, $request->type
         );
@@ -140,7 +143,7 @@ class GetPart implements \App\Application\ApplicationService {
             $chats = array_slice($chats, $index);
         }
         
-
+        
         if(count($chats) > $count) {
             $chats = array_slice($chats, 0, $count);
         }
@@ -158,6 +161,45 @@ class GetPart implements \App\Application\ApplicationService {
             $this->chatTransformer->transformMultiple($requester, $chats, $messagesCount, $fields),
             $cursor,
             $allCount
+       );
+    }
+    
+    public function execute(BaseRequest $request): GetPartResponse {
+        $requester = $this->findRequesterOrFail($request->requesterId);
+        
+        $user = $this->findUserOrFail($request->userId, true, null);
+        
+        if(!$requester->equals($user)) {
+           throw new \App\Application\Exceptions\ForbiddenException(228, "No rights"); 
+        }
+        $cursor = null;
+        $count = !is_null($request->count) ? (int)$request->count : 20;
+        
+        $chats = $this->chats->getChatsOfUserTest(
+            $user,
+            $request->interlocutorId,
+            $request->cursor,
+            $count +1,
+            $request->type,
+            (bool)$request->onlyUnread
+        );
+
+//        if(count($chats) > $count) {
+//            $chats = array_slice($chats, 0, $count);
+//        }
+        if((count($chats) - $count) === 1) {
+            $cursor = $chats[count($chats) -1]->sortValue;
+            array_pop($chats);
+        }
+        $messagesCount = !is_null($request->messagesCount)
+            ? (int)$request->messagesCount : 0;
+        
+        $fields = is_null($request->fields) ? [] : explode(',', $request->fields);
+        
+        return new GetPartResponse(
+            $this->chatTransformer->transformMultiple($requester, $chats, $messagesCount, $fields),
+            $cursor,
+            1234
        );
     }
 }

@@ -12,8 +12,8 @@
             <unique-constraint columns="unique_key" name="unique_conn" />
         </unique-constraints>
         
-        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user1" />
-        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user2" />
+        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user1" fetch="EAGER" />
+        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user2" fetch="EAGER" />
         
         <!--field name="version" type="integer" version="true" /-->
         <field name="isAccepted" column="is_accepted" type="boolean" />

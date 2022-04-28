@@ -11,9 +11,16 @@ use App\Domain\Model\Users\User\User;
 use App\DataTransformer\Chats\MessageTransformer;
 use App\DTO\Chats\ChatDTOInterface;
 use App\DTO\Chats\PartialChatDTO;
+use App\Domain\Model\Users\User\UserRepository;
 
 class ChatTransformer extends Transformer {
     use \App\DataTransformer\TransformerTrait;
+    
+    private UserRepository $users;
+    
+    function __construct(UserRepository $users) {
+        $this->users = $users;
+    }
     
     function transformMultiple(User $requester, array $chats, int $messagesCount = 10, array $fields = []): array {
         $transformed = [];
@@ -24,7 +31,6 @@ class ChatTransformer extends Transformer {
     }
     
     function transform(User $requester, Chat $chat, int $messagesCount = 10, array $fields = []): ChatDTOInterface {
-//        echo count($fields);exit();
         if(count($fields) > 0) {
             return $this->transformPartial($requester, $chat, $messagesCount, $fields);
         } else {
@@ -35,18 +41,31 @@ class ChatTransformer extends Transformer {
     function transformFull(User $requester, Chat $chat, int $messagesCount): ChatDTO {
         $messagesCountPlusOne = $messagesCount + 1;
         
-        $currentParticipant = null;
-        foreach($chat->participants() as $participant) {
-            if($participant->user()->equals($requester)) {
-                $currentParticipant = $participant;
-                break;
+        $currentParticipant = $chat->getParticipantByUserId($requester->id());
+        
+        $messagesDTOs = [];
+        $messageCursor = null;
+        $messages = [];
+        if($messagesCount) {
+            $criteria = Criteria::create();
+            $criteria
+                ->where(Criteria::expr()->eq("deletedForAll", false))
+                ->setMaxResults($messagesCountPlusOne)
+                ->orderBy(array('id' => Criteria::DESC));
+            $messages = $currentParticipant->messages()->matching($criteria)->toArray();
+            $messagesArr = [];
+            foreach($messages as $message) {
+                $messagesArr[] = $message;
+            }
+            $messages = $messagesArr; // Чтобы индекс был цифрой, а не ID
+            if((count($messages) - $messagesCount) === 1) {
+                $messageCursor = $messages[count($messages) -1]->id();
+                array_pop($messages);
+            }
+            if(count($messages)) {
+                $messagesDTOs = (new MessageTransformer())->transformMultiple($requester, $messages);
             }
         }
-        $criteria = Criteria::create();
-        $criteria
-            ->where(Criteria::expr()->eq("deletedForAll", false))
-            ->setMaxResults($messagesCountPlusOne)
-            ->orderBy(array('id' => Criteria::DESC));
         
         $criteria2 = Criteria::create();
         $criteria2->where(Criteria::expr()->eq("deletedForAll", false));
@@ -57,13 +76,6 @@ class ChatTransformer extends Transformer {
         $unreadMessages = $currentParticipant->messages()->matching($criteria2);
         $unreadMessagesCount = $unreadMessages->count();
         
-        $messages = $currentParticipant->messages()->matching($criteria)->toArray();
-        $messagesArr = [];
-        foreach($messages as $message) {
-            $messagesArr[] = $message;
-        }
-        $messages = $messagesArr; // Чтобы индекс был цифрой, а не ID
-        
         $criteria3 = Criteria::create();
         $criteria3->where(Criteria::expr()->eq("deletedForAll", false));
         $criteria3->orderBy(array('id' => Criteria::DESC));
@@ -73,22 +85,29 @@ class ChatTransformer extends Transformer {
         $lastMessageDTO = $lastMessage
             ? (new MessageTransformer())->transform($requester, $lastMessage) : null;
         
-        $messageCursor = null;
-        if((count($messages) - $messagesCount) === 1) {
-
-            $messageCursor = $messages[count($messages) -1]->id();
-            array_pop($messages);
+        if($lastMessage && !$messagesCount) {
+            $messageCursor = $lastMessage->id();
         }
-        $messagesDTOs = (new MessageTransformer())->transformMultiple($requester, $messages);
         
         $participantsDTOs = [];
-        foreach($chat->participants() as $participant) {
-            $participantsDTOs[] = $this->creatorToDTO($participant->user());
+        if($chat->type() === 'pair_user_chat') {
+            $criteria = Criteria::create();
+            $criteria->where(Criteria::expr()->neq("userId", $requester->id()));
+            $interlocutorId = $chat->participants()->matching($criteria)->first()->getUserId();
+            $participantsDTOs[] = $this->creatorToDTO($requester);
+            $interlocutor = $this->users->getById($interlocutorId);
+            $participantsDTOs[] = $this->creatorToDTO($interlocutor);
+        } else {
+            foreach($chat->participants() as $participant) {
+                $participantsDTOs[] = $this->creatorToDTO($participant->user());
+            }
         }
+
         $lastReadMessageId = $currentParticipant->lastReadMessageId();
 //        echo $currentParticipant->user()->id() . '-----';
         return new ChatDTO(
             $chat->id(),
+            $chat->clientId(),
             $participantsDTOs,
             $chat->type(),
             $chat->startedBy(),
@@ -103,6 +122,7 @@ class ChatTransformer extends Transformer {
     
     function transformPartial(User $requester, Chat $chat, int $messagesCount, array $fields): PartialChatDTO {
         $dto = new PartialChatDTO($chat->id());
+        $dto->clientId = $chat->clientId();
 //        echo $messagesCount;exit();
         
         $currentParticipant = null;

@@ -1,0 +1,2 @@
+[2022-04-22T14:57:50.488934+03:00] errors_handler_middleware.ERROR: Parameter 'client_id' is required and should be in request body  
+[2022-04-22T15:13:17.812647+03:00] errors_handler_middleware.ERROR: Parameter 'front_key' is required and should be in request body  

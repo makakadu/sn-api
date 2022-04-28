@@ -22,6 +22,9 @@ class ActiveProfileDTO extends ProfileDTO {
     public int $postsCount;
     public array $pictures;
     public array $covers;
+    public string $firstName;
+    public string $lastName;
+    public string $username;
     
     public function __construct(
         string $id, ?PictureDTO $picture, ?CoverDTO $cover, string $firstName, string $lastName, string $username,
@@ -34,7 +37,10 @@ class ActiveProfileDTO extends ProfileDTO {
         array $pictures,
         array $covers
     ) {
-        parent::__construct($id, $firstName, $lastName, $username);
+        parent::__construct($id);
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->username = $username;
         $this->picture = $picture;
         $this->cover = $cover;
         $this->gender = $gender;

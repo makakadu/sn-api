@@ -15,13 +15,33 @@ trait AppServiceTrait {
     protected UserRepository $users;
     
     protected function findUserOrFail(string $userId, bool $asTarget, ?string $message): User {
-        $user = $this->users->getById($userId);
-        if($user) {
-            return $user;
+        $isUsername = false;
+        try {
+            \Ulid\Ulid::fromString($userId);
+        } catch (\Exception $ex) {
+            $isUsername = true;
         }
-        $user = $this->users->getByUsername($userId);
-        if($user) {
-            return $user;
+        
+        if($isUsername) {
+            $user = $this->users->getByUsername2($userId);
+            if($user) {
+                return $user;
+            }
+            // Дальше подстраховка на случай, если это не username, а Ulid
+            $user = $this->users->getById($userId);
+            if($user) {
+                return $user;
+            }
+        } else {
+            $user = $this->users->getById($userId);
+            if($user) {
+                return $user;
+            }
+            // Дальше подстраховка на случай, если это не Ulid, а username
+            $user = $this->users->getByUsername2($userId);
+            if($user) {
+                return $user;
+            }
         }
         
         $message = $message ?? "User $userId not found";
@@ -29,6 +49,13 @@ trait AppServiceTrait {
             throw new NotExistException($message);
         } else {
             throw new UnprocessableRequestException(1, $message);
+        }
+    }
+    
+    private function findById(string $id): ?User {
+        $user = $this->users->getById($id);
+        if($user) {
+            return $user;
         }
     }
     

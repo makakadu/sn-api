@@ -38,19 +38,32 @@ class GetMessagesPart implements \App\Application\ApplicationService {
         }
         $criteria = Criteria::create();
         $criteria->where(Criteria::expr()->eq("deletedForAll", 0));
+        $order = $request->order ? $request->order : 'DESC';
         if($request->cursor) {
-            $criteria->andWhere(Criteria::expr()->lte('id', $request->cursor));
+            if($order === 'ASC') {
+                $criteria->andWhere(Criteria::expr()->gte('id', $request->cursor));
+            } else {
+                $criteria->andWhere(Criteria::expr()->lte('id', $request->cursor));
+            }
         }
         $criteria->setMaxResults($count + 1);
-        $criteria->orderBy(array('id' => Criteria::DESC));
-
+        
+        
+        $criteria->orderBy(array('id' => $order === 'ASC'
+            ? Criteria::ASC : Criteria::DESC));
         $messages = $participantMessages->matching($criteria)->toArray();
 
         $cursor = null;
-        if((count($messages) - $count) === 1) {
-            $cursor = $messages[count($messages) -1]->id();
-            array_pop($messages);
-        }
+//        if($order === 'ASC') {
+//            if((count($messages) - $count) === 1) {
+//                
+//            }
+//        } else {
+            if((count($messages) - $count) === 1) {
+                $cursor = $messages[count($messages) -1]->id();
+                array_pop($messages);
+            }
+//        }
         
         return new GetMessagesPartResponse(
             $this->trans->transformMultiple($requester, $messages),

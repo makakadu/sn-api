@@ -60,7 +60,8 @@ class ConnectionDoctrineRepository extends AbstractDoctrineRepository implements
             ->where('f.user1Id = :user1Id AND f.user2Id = :user2Id')
             ->orWhere('f.user1Id = :user2Id AND f.user2Id = :user1Id')
             ->setParameter('user1Id', (string)$user1Id)
-            ->setParameter('user2Id', (string)$user2Id);
+            ->setParameter('user2Id', (string)$user2Id)
+            ->setMaxResults(1);
         
         $result = $qb->getQuery()->getOneOrNullResult();
         return $result;

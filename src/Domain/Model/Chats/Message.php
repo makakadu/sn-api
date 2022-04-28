@@ -10,28 +10,31 @@ use Ulid\Ulid;
 
 class Message {
     use EntityTrait;
-    
+    private string $clientId;
     private User $creator;
     private string $text;
     private Chat $chat;
     private bool $deletedForAll;
     private array $deletedFor;
-    private string $frontKey;
+//    private Collection $deletedFor;
     public string $creatorId;
 
-    function __construct(User $creator, Chat $chat, string $text, string $key) {
+    function __construct(string $clientId, User $creator, Chat $chat, string $text) {
         $this->id = (string)Ulid::generate(true);
+        $this->clientId = $clientId;
         $this->creator = $creator;
         $this->creatorId = $creator->id();
         $this->chat = $chat;
         $this->text = $text;
         $this->deletedForAll = false;
-        $this->deletedFor = [];
+        $this->deletedFor = [];//new ArrayCollection();
         $this->createdAt = new \DateTime('now');
         $this->isRead = false;
-        $this->frontKey = strtolower($key);
-        
 //        echo $this->key;exit();
+    }
+    
+    function clientId(): string {
+        return $this->clientId;
     }
     
     function getId(): string {
@@ -49,10 +52,6 @@ class Message {
     function changeText(string $text): void {
         $this->text = $text;
     }
-    
-    function key(): string {
-        return $this->frontKey;
-    }
 
     function creator(): User { return $this->creator; }
     function text(): string { return $this->text; }
@@ -66,22 +65,36 @@ class Message {
             throw new \App\Application\Exceptions\ForbiddenException(228, 'No rights');
         }
         $this->deletedForAll = true;
+        $this->chat->addAction($initiator, Action::DELETE_MESSAGE_FOR_ALL, $this->id, $this->clientId, $this->creatorId);
     }
     
-    function deleteForUser(User $user): void {
-        if(!$this->chat->participants()->contains($user)) {
-            throw new DomainExceptionAlt([
-                'message' => "User {$user->id()} is not a participant of chat {$this->chat->id()}"
-            ]);
-        }
-        $this->deletedFor[] = $user->id();
-    }
+//    function deleteForUser(User $user): void {
+//        $currentParticipant = null;
+//        foreach($this->participants as $participant) {
+//            if($participant->user()->equals($user)) {
+//                $currentParticipant = $participant;
+//                break;
+//            }
+//        }
+//        if(!$currentParticipant) {
+//            throw new DomainExceptionAlt([
+//                'message' => "User {$user->id()} is not a participant of chat {$this->chat->id()}"
+//            ]);
+//        }
+////        if(!$this->chat->participants()->contains($user)) {
+////            throw new DomainExceptionAlt([
+////                'message' => "User {$user->id()} is not a participant of chat {$this->chat->id()}"
+////            ]);
+////        }
+////        $this->deletedFor[] = $user->id();
+//        $this->deletedFor->add($currentParticipant);
+//    }
     
     public function getDeletedForAll(): bool {
         return $this->deletedForAll;
     }
 
-    public function getDeletedFor(): array {
+    public function getDeletedFor(): Collection {
         return $this->deletedFor;
     }
 

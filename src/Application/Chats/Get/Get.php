@@ -40,7 +40,7 @@ class Get implements \App\Application\ApplicationService {
         }
         
         $messagesCount = $request->messagesCount
-            ? (int)$request->messagesCount + 1
+            ? (int)$request->messagesCount
             : 10;
         
         return new GetResponse(

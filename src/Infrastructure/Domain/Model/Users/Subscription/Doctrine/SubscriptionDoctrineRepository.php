@@ -39,7 +39,8 @@ class SubscriptionDoctrineRepository extends AbstractDoctrineRepository implemen
             ->where('s.subscriberId = :subscriberId')
             ->andWhere('s.userId = :userId')
             ->setParameter('subscriberId', $subscriberId)
-            ->setParameter('userId', $userId);
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
         
         $result = $qb->getQuery()->getOneOrNullResult();
         return $result;

@@ -94,11 +94,7 @@ class ConnectionsController extends AbstractController {
             isset($queryParams['type']) ? $queryParams['type'] : null,
             isset($queryParams['start']) ? $queryParams['start'] : null,
         );
-        
-        $useCase = new TransactionalApplicationService(
-            $this->getPart, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->getPart->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 201);
     }
     

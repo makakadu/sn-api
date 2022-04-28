@@ -29,6 +29,7 @@ use App\Domain\Model\Users\Photos\AlbumPhoto\AlbumPhoto;
 use App\Domain\Model\Pages\Page\Page;
 use App\Domain\Model\Users\Photos\Cover\Cover;
 use App\Domain\Model\Chats\Chat;
+use App\Domain\Model\Users\Photos\ProfilePicture\CurrentProfilePicture;
 
 class User {
     use UserMainInfo;
@@ -60,6 +61,8 @@ class User {
     private DateTime $lastRequestsCheck;
     private ProfilePrivacySettings $privacy;
     private Settings $settings;
+    private ?string $smallPicture = null;
+    private ?CurrentProfilePicture $currentPicture;
     
     /** @var Collection<string, Album> $albums */
     private Collection $albums;
@@ -101,10 +104,13 @@ class User {
         $this->videos = new ArrayCollection();
         $this->posts = new ArrayCollection();
         $this->pictures = new ArrayCollection();
+        $this->picture = null;
         $this->covers = new ArrayCollection();
+        $this->cover = null;
         $this->albums = new ArrayCollection();
         $this->videoPlaylists = new ArrayCollection();
         $this->bans = new ArrayCollection();
+        $this->currentPicture = null;
         
         $this->connectionsLists = new ArrayCollection();
         $this->connections = new ArrayCollection();
@@ -135,8 +141,8 @@ class User {
         $this->lastRequestsCheck = new \DateTime('now');
     }
     
-    function createChat(array $participants, string $type, ?string $text, string $frontKey): Chat {
-        $chat = new Chat($this, $participants, $type, $text, $frontKey);
+    function createChat(array $participants, string $clientId, string $type, ?string $text, string $messageClientId): Chat {
+        $chat = new Chat($clientId, $this, $participants, $type, $text, $messageClientId);
         return $chat;
     }
     
@@ -264,23 +270,27 @@ class User {
         return new \App\Domain\Model\Groups\Group\Group($this, $name, $private, $visible);
     }
     
-    function currentPicture(): ?ProfilePicture {
-        $criteria = Criteria::create()
-            ->orderBy(array('updatedAt' => Criteria::DESC))
-            ->setMaxResults(1);
-        /** @var ArrayCollection<string, ProfilePicture> $profilePictures */
-        $profilePictures = $this->pictures;
-        
-        $matched = $profilePictures->matching($criteria);
-        if(count($matched)) {
-            $key = array_key_first($matched->toArray());
-            return $matched[$key];
-        } else {
-            return null;
-        }
+    function currentPicture(): ?CurrentProfilePicture {
+        return $this->currentPicture;
     }
     
-    function currentCover(): ?Cover {
+//    function currentPicture(): ?ProfilePicture {
+//        $criteria = Criteria::create()
+//            ->orderBy(array('updatedAt' => Criteria::DESC))
+//            ->setMaxResults(1);
+//        /** @var ArrayCollection<string, ProfilePicture> $profilePictures */
+//        $profilePictures = $this->pictures;
+//        
+//        $matched = $profilePictures->matching($criteria);
+//        if(count($matched)) {
+//            $key = array_key_first($matched->toArray());
+//            return $matched[$key];
+//        } else {
+//            return null;
+//        }
+//    }
+    
+    function currentCover(): ?CurrentProfilePicture {
         $criteria = Criteria::create()->setMaxResults(1);
         /** @var ArrayCollection<string, Cover> $covers */
         $covers = $this->covers;
@@ -486,7 +496,19 @@ class User {
         //print_r($versions);exit();
         $picture = new ProfilePicture($this, $versions);
         $this->pictures->add($picture);
+        $this->smallPicture = $picture->croppedSmall();
+        if($this->currentPicture) {
+            $this->currentPicture->update($picture);
+        } else {
+            $this->currentPicture = new CurrentProfilePicture($picture);
+        }
         return $picture;
+    }
+    
+    
+    
+    function smallPicture(): ?string {
+        return $this->smallPicture;
     }
     
     /**
@@ -499,7 +521,12 @@ class User {
         }
         $cover = new Cover($this, $versions);
         $this->covers->add($cover);
+        $this->cover = $cover;
         return $cover;
+    }
+    
+    function cover(): ?Cover {
+        return $this->cover;
     }
     
     /**

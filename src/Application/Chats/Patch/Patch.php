@@ -36,13 +36,8 @@ class Patch implements \App\Application\ApplicationService {
             $chat->read($requester, $message);
             $this->chats->flush();
             
-            $currentParticipant = null;
-            foreach($chat->participants() as $participant) {
-                if($participant->user()->equals($requester)) {
-                    $currentParticipant = $participant;
-                    break;
-                }
-            }
+            $currentParticipant = $chat->getParticipantByUserId($requester->id());
+
             $criteria2 = Criteria::create();
             $criteria2->where(Criteria::expr()->eq("deletedForAll", 0));
             $criteria2->andWhere(Criteria::expr()->neq("creatorId", $requester->id()));
@@ -54,6 +49,7 @@ class Patch implements \App\Application\ApplicationService {
                 'update-last-read-message-id',
                 [
                     'chat_id' => $chat->id(),
+                    'chat_unique_key' => $chat->getUniqueKey(),
                     'unread_messages_count' => $unreadMessagesCount,
                     'last_mead_message_id' => $request->value,
                     'user_id' => $requester->id()

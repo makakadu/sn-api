@@ -78,6 +78,7 @@ return function (App $app) {
             $group->post('/{id}/messages', ChatsController::class . ":createMessage");
             $group->get('/{id}', ChatsController::class . ":get");
             $group->get('/{id}/messages', ChatsController::class . ":getMessagesPart");
+            $group->get('/{id}/actions', ChatsController::class . ":getActionsPart");
             $group->patch('/{id}', ChatsController::class . ":patch");
             $group->delete('/{id}/messages/{messageId}', ChatsController::class . ":deleteMessage");
             $group->delete('/{id}/messages', ChatsController::class . ":deleteHistory");

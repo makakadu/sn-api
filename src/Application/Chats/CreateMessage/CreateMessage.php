@@ -9,6 +9,7 @@ use App\Domain\Model\Chats\MessageRepository;
 use App\Domain\Model\Chats\ChatRepository;
 use Pusher\Pusher;
 use App\DataTransformer\Chats\MessageTransformer;
+use App\Domain\Model\Chats\Action;
 
 class CreateMessage implements \App\Application\ApplicationService {
     use \App\Application\AppServiceTrait;
@@ -30,7 +31,7 @@ class CreateMessage implements \App\Application\ApplicationService {
         $requester = $this->findRequesterOrFailIfNotFoundOrInactive($request->requesterId);
         $chat = $this->findChatOrFail($request->chatId, true, null);
         
-        $message = $chat->createMessage($requester, $request->text, $request->frontKey);
+        $message = $chat->createMessage($requester, $request->text, $request->clientId);
         $this->messages->flush();
         
         $channels = [];
@@ -43,8 +44,10 @@ class CreateMessage implements \App\Application\ApplicationService {
             'create-message',
             [
                 'chat_id' => $chat->id(),
-                'message' => $this->trans->transform($requester, $message),
-                'front_key' => $request->frontKey
+                'chat_client_id' => $chat->clientId(),
+                'chat_unique_key' => $chat->getUniqueKey(),
+                'message_client_id' => $message->clientId(),
+                'message' => $this->trans->transform($requester, $message)
             ]
         );
         

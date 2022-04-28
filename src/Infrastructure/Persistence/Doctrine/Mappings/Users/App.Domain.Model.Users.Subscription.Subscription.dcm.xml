@@ -18,8 +18,8 @@
         <field name="pauseStart" column="pause_start" type="datetime" nullable="true" />
         <field name="pauseEnd" column="pause_end" type="datetime" nullable="true" />
 
-        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user" />
-        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="subscriber" />
+        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="user" fetch="EAGER" />
+        <many-to-one target-entity="App\Domain\Model\Users\User\User" field="subscriber" fetch="EAGER" />
         
         <field name="userId" column="_user_id" type="string" />
         <field name="subscriberId" column="_subscriber_id" type="string" />

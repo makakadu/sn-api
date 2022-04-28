@@ -36,11 +36,10 @@ trait TransformerTrait {
     
     function creatorToDTO(User $user): CreatorDTO {
         $picture = $user->currentPicture();
-        $active = !$user->isBlocked();
         
         return new CreatorDTO(
             $user->id(),
-            $picture && $active ? $picture->versions()['cropped_original'] : null,
+            !$user->isBlocked() && $picture ? $picture->croppedSmall() : null,
             $user->firstName(), 
             $user->lastName(),
             $user->username()->username()
@@ -53,7 +52,7 @@ trait TransformerTrait {
         
         return new UserSmallDTO(
             $user->id(),
-            $picture && $active ? $picture->versions()['cropped_original'] : null,
+            $picture && $active ? $picture->croppedSmall() : null,
             $user->firstName(), 
             $user->lastName(),
             $user->username()->username()
@@ -61,11 +60,11 @@ trait TransformerTrait {
     }
     
     function profileToSmallDTO(User $owner): \App\DTO\Users\ProfileSmallDTO {
-        $picture = $owner->currentPicture();
+        $picture = $owner->picture();
         
         return new \App\DTO\Users\ProfileSmallDTO(
             $owner->id(),
-            $picture ? $picture->small() : null,
+            $picture ? $picture->croppedSmall() : null,
             $owner->firstName(), 
             $owner->lastName()
         );

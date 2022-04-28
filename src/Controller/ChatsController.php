@@ -15,6 +15,7 @@ use App\Application\Chats\Patch\PatchRequest;
 use App\Application\Chats\DeleteMessage\DeleteMessageRequest;
 use App\Application\Chats\PatchMessage\PatchMessageRequest;
 use App\Application\Chats\DeleteHistory\DeleteHistoryRequest;
+use App\Application\Chats\GetActionsPart\GetActionsPartRequest;
 
 class ChatsController extends AbstractController {
     /**
@@ -85,6 +86,12 @@ class ChatsController extends AbstractController {
     
     /**
      * @Inject
+     * @var \App\Application\Chats\GetActionsPart\GetActionsPart
+     */
+    private $getActionsPart;
+    
+    /**
+     * @Inject
      * @var \App\Application\Chats\TypingMessage\TypingMessage
      */
     private $typingMessage;
@@ -93,55 +100,44 @@ class ChatsController extends AbstractController {
         $parsedBody = $request->getParsedBody();
         
         $this->failIfRequiredParamWasNotPassed(
-            $parsedBody, ['type', 'participants', 'front_key']
+            $parsedBody, ['client_id', 'type', 'participants']
         );
         $requestDTO = new CreateRequest(
             $request->getAttribute('token')['data']->userId,
+            $parsedBody['client_id'],
+            $parsedBody['message_client_id'],
             $parsedBody['participants'],
             $parsedBody['type'],
             isset($parsedBody['first_message']) ? $parsedBody['first_message'] : null,
-            $parsedBody['front_key']
+            $parsedBody['place_id']
         );
-        $useCase = new TransactionalApplicationService(
-            $this->create, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->create->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 201);
     }
  
     function typingMessage(Request $request, Response $response) {
         $parsedBody = $request->getParsedBody();
         
-        $this->failIfRequiredParamWasNotPassed(
-            $parsedBody, ['chat_id']
-        );
+        $this->failIfRequiredParamWasNotPassed($parsedBody, ['chat_id']);
         $requestDTO = new \App\Application\Chats\TypingMessage\TypingMessageRequest(
             $request->getAttribute('token')['data']->userId,
             $parsedBody['chat_id']
         );
-        $useCase = new TransactionalApplicationService(
-            $this->typingMessage, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->typingMessage->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 200);
     }
     
     function patch(Request $request, Response $response) {
         $parsedBody = $request->getParsedBody();
-        
-        $this->failIfRequiredParamWasNotPassed(
-            $parsedBody, ['property', 'value']
-        );
+        $this->failIfRequiredParamWasNotPassed($parsedBody, ['property', 'value']);
         $requestDTO = new PatchRequest(
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id'),
             $parsedBody['property'],
             $parsedBody['value'],
+            $parsedBody['place_id']
         );
-        $useCase = new TransactionalApplicationService(
-            $this->patch, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->patch->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 200);
     }
     
@@ -161,80 +157,77 @@ class ChatsController extends AbstractController {
             isset($queryParams['hide-empty']) ? $queryParams['hide-empty'] : null,
             'ASC'
         );
-        $useCase = new TransactionalApplicationService(
-            $this->getPart, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->getPart->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO);
     }
     
     function get(Request $request, Response $response): Response {
         $queryParams = $request->getQueryParams();
-        
         $requestDTO = new GetRequest(
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id'),
             isset($queryParams['messages-count'])
                 ? $queryParams['messages-count'] : null,
         );
-        $useCase = new TransactionalApplicationService(
-            $this->get, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->get->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO);
     }
     
     function getMessagesPart(Request $request, Response $response): Response {
         $queryParams = $request->getQueryParams();
-        
         $requestDTO = new GetMessagesPartRequest(
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id'),
             isset($queryParams['cursor']) ? $queryParams['cursor'] : null,
+            isset($queryParams['count']) ? $queryParams['count'] : null,
+            isset($queryParams['order']) ? $queryParams['order'] : null
+        );
+        $responseDTO = $this->getMessages->execute($requestDTO);
+        return $this->prepareResponse($response, $responseDTO);
+    }
+    
+    function getActionsPart(Request $request, Response $response): Response {
+        $queryParams = $request->getQueryParams();
+        $requestDTO = new GetActionsPartRequest(
+            $request->getAttribute('token')['data']->userId,
+            $request->getAttribute('id'),
+            isset($queryParams['types']) ? $queryParams['types'] : null,
+            isset($queryParams['cursor']) ? $queryParams['cursor'] : null,
             isset($queryParams['count']) ? $queryParams['count'] : null
         );
-        $useCase = new TransactionalApplicationService(
-            $this->getMessages, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->getActionsPart->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO);
     }
     
     function createMessage(Request $request, Response $response) {
         $parsedBody = $request->getParsedBody() ?? [];
-        
         $this->failIfRequiredParamWasNotPassed(
-            $parsedBody, ['text', 'front_key']
+            $parsedBody, ['client_id', 'text']
         );
         $requestDTO = new CreateMessageRequest(
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id'),
+            $parsedBody['client_id'],
             $parsedBody['text'],
-            $parsedBody['front_key'],
+            $parsedBody['place_id']
         );
-        $useCase = new TransactionalApplicationService(
-            $this->createMessage, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->createMessage->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 201);
     }
     
     function patchMessage(Request $request, Response $response) {
         $parsedBody = $request->getParsedBody() ?? [];
-        
         $this->failIfRequiredParamWasNotPassed(
-            $parsedBody, ['property', 'value']
+            $parsedBody, ['property', 'value', 'place_id']
         );
         $requestDTO = new PatchMessageRequest(
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id'),
             $parsedBody['property'],
             $parsedBody['value'],
+            $parsedBody['place_id']
         );
-        $useCase = new TransactionalApplicationService(
-            $this->patchMessage, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->patchMessage->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 200);
     }
     
@@ -244,10 +237,7 @@ class ChatsController extends AbstractController {
             $request->getAttribute('id'),
             $request->getAttribute('messageId')
         );
-        $useCase = new TransactionalApplicationService(
-            $this->deleteMessage, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->deleteMessage->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 200);
     }
     
@@ -256,24 +246,16 @@ class ChatsController extends AbstractController {
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id')
         );
-        $useCase = new TransactionalApplicationService(
-            $this->deleteHistory, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->deleteHistory->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 200);
     }
     
-    function getMessage(Request $request, Response $response): Response {
-//        $queryParams = $request->getQueryParams();
-//        
+    function getMessage(Request $request, Response $response): Response { 
         $requestDTO = new GetMessageRequest(
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id'),
         );
-        $useCase = new TransactionalApplicationService(
-            $this->getMessage, $this->transactionalSession
-        );
-        $responseDTO = $useCase->execute($requestDTO);
+        $responseDTO = $this->getMessage->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO);
     }
 }

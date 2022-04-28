@@ -42,7 +42,7 @@ class Create implements \App\Application\ApplicationService {
                 $participants[] = $user;
             }
         }
-        $chat = $requester->createChat($participants, $request->type, $request->firstMessage, $request->frontKey);
+        $chat = $requester->createChat($participants, $request->clientId, $request->type, $request->firstMessage, $request->messageClientId);
         $this->chats->add($chat);
         $this->chats->flush();
         
@@ -56,9 +56,11 @@ class Create implements \App\Application\ApplicationService {
             $channels,
             'create-chat',
             [
+                'chat_id' => $chat->id(),
+                'chat_client_id' => $chat->clientId(),
+                'message_client_id' => $firstMessage->clientId(),
                 'chat' => $this->trans->transform($requester, $chat, 0),
-                'message' => $this->messagesTrans->transform($requester, $firstMessage),
-                'front_key' => $request->frontKey
+                'message' => $this->messagesTrans->transform($requester, $firstMessage)
             ]
         );
         

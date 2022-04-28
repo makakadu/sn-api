@@ -13,7 +13,7 @@
         </id>
         
         <unique-constraints>
-            <unique-constraint columns="front_key" name="unique_front_key" />
+            <unique-constraint columns="client_id" name="unique_client_id" />
         </unique-constraints>
         
         <field name="createdAt" column="created_at" type="datetime" />
@@ -21,19 +21,18 @@
         <field name="deletedFor" column="deleted_for" type="array" />
         <field name="text" type="string" />
         <field name="creatorId" column="_creator_id" type="string" />
-        <field name="frontKey" column='front_key' type="string" />
-
+        <field name="clientId" column='client_id' type="string" />
         
         <many-to-one target-entity="App\Domain\Model\Users\User\User" field="creator" />
         <many-to-one target-entity="App\Domain\Model\Chats\Chat" field="chat" inversed-by="messages" orphan-removal='true' />
         
-<!--        <many-to-many target-entity="App\Domain\Model\Users\User\User" field="deletedFor" index-by="id" >
-            <join-table name="deleted_for_users" >
+<!--        <many-to-many target-entity="App\Domain\Model\Chats\Participant" field="deletedFor" index-by="id" >
+            <join-table name="deleted_for_participants" >
                 <join-columns>
                     <join-column name="message_id" referenced-column-name="id" on-delete="cascade" />
                 </join-columns>
                 <inverse-join-columns>
-                    <join-column name="user_id" referenced-column-name="id" on-delete="cascade" />
+                    <join-column name="participant_id" referenced-column-name="id" on-delete="cascade" />
                 </inverse-join-columns>
             </join-table>
         </many-to-many>-->

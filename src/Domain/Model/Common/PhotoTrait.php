@@ -7,9 +7,9 @@ use App\Domain\Model\Users\User\User;
 trait PhotoTrait {
     //private User $creator;
     
-    private array $original;
-    private array $small;
-    private array $medium;
+    protected array $original;
+    protected array $small;
+    protected array $medium;
     
     function original(): array { return $this->original; }
     function small(): array { return $this->small; }
@@ -28,7 +28,7 @@ trait PhotoTrait {
     }
     
     /** @param array<array> $versions */
-    private function setVersions(array $versions): void {
+    function setVersions(array $versions): void {
         /* Нужно ли делать проверку массива $versions? Мне кажется, что нет, если нет какого-то ключа, то возникнет ошибка. Если будут лишние ключи, то ничего
          страшного.
          А вот проверку наличия файлов стоит сделать. Но так же я думаю, что это не обязательно, мне кажется, что стоит доверить классу PhotoService, который
