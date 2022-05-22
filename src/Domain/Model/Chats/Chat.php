@@ -7,8 +7,13 @@ use App\Domain\Model\Users\User\User;
 use App\Domain\Model\EntityTrait;
 use Ulid\Ulid;
 use Doctrine\Common\Collections\Criteria;
+use App\Domain\Model\Chats\Actions\CreateMessageAction;
+use App\Domain\Model\Chats\Actions\CreateChatAction;
 
 class Chat {
+    const PAIR_CHAT = 'pair_user_chat';
+    const GROUP_CHAT = 'group_user_chat';
+    
     use EntityTrait;
     private Collection $participants;
     private Collection $messages;
@@ -27,7 +32,7 @@ class Chat {
         $this->clientId = $clientId;
         $this->startedBy = $creator->id();
         
-        if(!in_array($type, ['pair_user_chat', 'group_user_chat'])) {
+        if(!in_array($type, [self::PAIR_CHAT, self::GROUP_CHAT])) {
             throw new \InvalidArgumentException('Invalid chat type');
         }
         
@@ -58,17 +63,31 @@ class Chat {
         } elseif($type === 'group_user_chat') {
             $this->uniqueKey = (string)Ulid::generate(true);
         }
+        $firstMessage = null;
         if($text) {
-            $this->createMessage($creator, $text, $messageClientId);
+            $firstMessage = $this->createMessage($creator, $text, $messageClientId, true);
         }
+        $this->actions->add(new CreateChatAction($this, $creator, $firstMessage));
+    }
+    
+    function getLastMessageOfUser(User $user): ?Message {
+        $currentParticipant = $this->getParticipantByUserId($user->id());
+        if(!$currentParticipant) {
+            return null;
+        }
+        $criteria = Criteria::create();
+        $criteria->where(Criteria::expr()->eq("deletedForAll", false));
+        $criteria->orderBy(array('id' => Criteria::DESC));
+        $criteria->setMaxResults(1);
+        return $currentParticipant->messages()->matching($criteria)->first();
     }
     
     function getUniqueKey(): string {
         return $this->uniqueKey;
     }
     
-    function addAction(User $initiator, int $type, string $messageId, string $messageClientId, string $creatorId): void  {
-        $this->actions->add(new Action($this, $initiator, $type, $messageId, $messageClientId, $creatorId));
+    function addAction(Action $action): void  {
+        $this->actions->add($action);
     }
     
 //    function getActionsForUser(User $user, ?string $cursor, ?int $count): Collection {
@@ -112,6 +131,11 @@ class Chat {
         return null;
     }
     
+    function getLastAction(): ?Action {
+        $lastMessage = $this->actions->last();
+        return $lastMessage ? $lastMessage : null;
+    }
+    
     function read(User $requester, Message $message): void {
         $currentParticipant = $this->getParticipantByUserId($requester->id());
         
@@ -125,6 +149,13 @@ class Chat {
             throw new \App\Domain\Model\DomainExceptionAlt(['message' => "Message {$message->id()} deleted for current user"]);
         }
         $currentParticipant->read($message);
+        
+        $criteria = Criteria::create();
+        $criteria->where(Criteria::expr()->eq("deletedForAll", false));
+        $criteria->andWhere(Criteria::expr()->gt("id", $currentParticipant->lastReadMessageId()));
+        $unreadMessagesCount = $currentParticipant->messages()->matching($criteria)->count();
+        
+        $this->actions->add(new Actions\ReadMessageAction($this, $requester, $message->id(), $message->clientId(), $message->creatorId(), $unreadMessagesCount));
     }
     
     function type(): string {
@@ -148,7 +179,7 @@ class Chat {
         $this->participants->remove($participantId);
     }
     
-    function createMessage(User $creator, string $text, string $clientId): Message {
+    function createMessage(User $creator, string $text, string $clientId, bool $isNewChat = false): Message {
         $creatorParticipant = $this->getParticipantByUserId($creator->id());
         if(!$creatorParticipant) {
             throw new \App\Application\Exceptions\ForbiddenException(228, 'No rights');
@@ -159,7 +190,9 @@ class Chat {
             $participant->addMessage($message);
         }
         $creatorParticipant->readMessage($message);
-        $this->actions->add(new Action($this, $creator, Action::CREATE_MESSAGE, $message->id(), $message->clientId(), $message->creator()->id()));
+        if(!$isNewChat) {
+            $this->actions->add(new CreateMessageAction($this, $creator, $message));
+        }
         return $message;
     }
     
@@ -173,7 +206,11 @@ class Chat {
             throw new \App\Application\Exceptions\NotExistException('Message not found');
         }
         $participant->messages()->remove($messageId);
-        $this->actions->add(new Action($this, $user, Action::DELETE_MESSAGE, $message->id(), $message->clientId(), $message->creator()->id()));
+//        $lastReadMessageId = $participant->lastReadMessageId();
+//        if($lastReadMessageId < $message->id()) {
+//            $participant->readMessage($message);
+//        }
+        $this->actions->add(new Actions\DeleteMessageAction($this, $user, $message->id(), $message->clientId(), $message->creator()->id()));
 //
 //        $criteria = Criteria::create();
 //        $criteria
@@ -191,29 +228,29 @@ class Chat {
 //        }
     }
     
-    function removeMessageForAll(User $initiator, string $messageId): void {
-        $message = $this->messages->get($messageId);
-        if(!$message) {
-            throw new \App\Application\Exceptions\NotExistException('Message not found');
-        }
-        $message->deleteForAll($initiator);
-        $this->actions->add(new Action($this, $initiator, Action::DELETE_MESSAGE_FOR_ALL, $message->id(), $message->clientId(), $message->creator()->id()));
-
-//        $criteria = Criteria::create();
-//        $criteria
-//            ->where(Criteria::expr()->eq("deletedForAll", 0))
-//            ->andWhere(Criteria::expr()->notIn("deletedFor", [$user->id()]))
-//            ->setMaxResults(1)
-//            ->orderBy(array('id' => Criteria::DESC));
-//        
-//        $lastActiveMessage = $this->messages()->matching($criteria)->first();
-//        if($lastActiveMessage) {
-//            $this->lastActivityId = $lastActiveMessage->id();
-//        } else {
-//            $this->lastActivityId = $this->id(); // Если нет ни одного не удалённого сообщения, то последней активностью, по которой будет происходить сортировка,
-//            // будет - создание чата
+//    function removeMessageForAll(User $initiator, string $messageId): void {
+//        $message = $this->messages->get($messageId);
+//        if(!$message) {
+//            throw new \App\Application\Exceptions\NotExistException('Message not found');
 //        }
-    }
+//        $message->deleteForAll($initiator);
+//        $this->actions->add(new Action($this, $initiator, Action::DELETE_MESSAGE_FOR_ALL, $message->id(), $message->clientId(), $message->creator()->id()));
+//
+////        $criteria = Criteria::create();
+////        $criteria
+////            ->where(Criteria::expr()->eq("deletedForAll", 0))
+////            ->andWhere(Criteria::expr()->notIn("deletedFor", [$user->id()]))
+////            ->setMaxResults(1)
+////            ->orderBy(array('id' => Criteria::DESC));
+////        
+////        $lastActiveMessage = $this->messages()->matching($criteria)->first();
+////        if($lastActiveMessage) {
+////            $this->lastActivityId = $lastActiveMessage->id();
+////        } else {
+////            $this->lastActivityId = $this->id(); // Если нет ни одного не удалённого сообщения, то последней активностью, по которой будет происходить сортировка,
+////            // будет - создание чата
+////        }
+//    }
 
     function id(): string {
         return $this->id;

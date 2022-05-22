@@ -56,7 +56,7 @@ class GetPart implements \App\Application\ApplicationService {
     
     function validate(GetRequest $request): void {
         GetRequestParamsValidator::validateCountParam($request->count);
-        GetRequestParamsValidator::validateOffsetIdParam($request->cursor);
+        GetRequestParamsValidator::validateOffsetIdParam($request->prevCursor);
         GetRequestParamsValidator::validateCommentsTypeParam($request->commentsType);
         GetRequestParamsValidator::validateCommentsCountParam($request->commentsCount);
         GetRequestParamsValidator::validateCommentsOrderParam($request->commentsOrder, ['asc', 'desc', 'top']);

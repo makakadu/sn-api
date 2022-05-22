@@ -1,0 +1,1 @@
+[2022-05-13T11:35:48.436904+03:00] server_errors_handler_middleware.ERROR: (other) Cannot use App\DTO\Chats\ActionDTO as ActionDTO because the name is already in use on line 11 in file /media/aleksey/F0BE6575B0AF464D/Misc/Programming/socialnetwork/scback/src/DataTransformer/Chats/ActionTransformer.php. (error type: 64)  

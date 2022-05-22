@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Domain\Model\EntityTrait;
 use Ulid\Ulid;
+use Doctrine\Common\Collections\Criteria;
 
 class Participant {
     use EntityTrait;
@@ -27,6 +28,22 @@ class Participant {
         $this->lastMessageId = null;
         $this->createdAt = new \DateTime('now');
         $this->userId = $user->id();
+    }
+    
+    function getMessages(int $count, string $order, ?string $cursor): ArrayCollection {
+        $criteria = Criteria::create();
+        $criteria->where(Criteria::expr()->eq("deletedForAll", 0));
+        if($cursor) {
+            if($order === 'ASC') {
+                $criteria->andWhere(Criteria::expr()->gte('id', $cursor));
+            } else {
+                $criteria->andWhere(Criteria::expr()->lte('id', $cursor));
+            }
+        }
+        $criteria->setMaxResults($count);
+        
+        $criteria->orderBy(array('id' => $order));
+        return $this->messages->matching($criteria);
     }
     
     function read(Message $message): void {

@@ -9,6 +9,9 @@ use App\Domain\Model\Chats\ChatRepository;
 use Pusher\Pusher;
 use App\DataTransformer\Chats\ChatTransformer;
 use App\DataTransformer\Chats\MessageTransformer;
+use App\Domain\Model\Chats\Chat;
+use App\Domain\Model\Chats\ActionsEnum;
+use App\DataTransformer\Chats\ActionTransformer;
 
 class Create implements \App\Application\ApplicationService {
     use \App\Application\AppServiceTrait;
@@ -28,7 +31,7 @@ class Create implements \App\Application\ApplicationService {
     
     public function execute(BaseRequest $request): BaseResponse {
 //        $this->validateRequest($request);
-        if(!in_array($request->type, ['pair_user_chat', 'group_user_chat'])) {
+        if(!in_array($request->type, [Chat::PAIR_CHAT, Chat::GROUP_CHAT])) {
             throw new \App\Application\Exceptions\ValidationException('Invalid chat type');
         }
         $requester = $this->findRequesterOrFailIfNotFoundOrInactive($request->requesterId);
@@ -51,17 +54,16 @@ class Create implements \App\Application\ApplicationService {
             $channels[] = 'chat_' . $participant->user()->id();
         }
         
+        $actionDTO = (new ActionTransformer($requester))->transform($chat->getLastAction());
         $firstMessage = $chat->messages()->first();
+        
+        // Сразу после создания чата он выглядит одинаково для всех, поэтому отправляем те же самые данные для всех
+        $data = (array)$actionDTO;
+        $data['place_id'] = $request->placeId;
         $this->pusher->trigger(
             $channels,
-            'create-chat',
-            [
-                'chat_id' => $chat->id(),
-                'chat_client_id' => $chat->clientId(),
-                'message_client_id' => $firstMessage->clientId(),
-                'chat' => $this->trans->transform($requester, $chat, 0),
-                'message' => $this->messagesTrans->transform($requester, $firstMessage)
-            ]
+            ActionsEnum::CREATE_CHAT,
+            $data
         );
         
         return new CreateResponse($chat->id(), $firstMessage ? $firstMessage->id() : null);

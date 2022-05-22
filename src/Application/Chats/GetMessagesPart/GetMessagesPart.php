@@ -28,46 +28,51 @@ class GetMessagesPart implements \App\Application\ApplicationService {
         
         $chat = $this->findChatOrFail($request->chatId, true, null);
         $count = $request->count ? (int)$request->count : 20;
-        
-        $participantMessages = null;
-        foreach($chat->participants() as $participant) {
-            if($participant->user()->equals($requester)) {
-                $participantMessages = $participant->messages();
-                break;
-            }
-        }
-        $criteria = Criteria::create();
-        $criteria->where(Criteria::expr()->eq("deletedForAll", 0));
         $order = $request->order ? $request->order : 'DESC';
-        if($request->cursor) {
-            if($order === 'ASC') {
-                $criteria->andWhere(Criteria::expr()->gte('id', $request->cursor));
-            } else {
-                $criteria->andWhere(Criteria::expr()->lte('id', $request->cursor));
-            }
-        }
-        $criteria->setMaxResults($count + 1);
+        $cursor = $request->cursor;
         
-        
-        $criteria->orderBy(array('id' => $order === 'ASC'
-            ? Criteria::ASC : Criteria::DESC));
-        $messages = $participantMessages->matching($criteria)->toArray();
+        $participant = $chat->getParticipantByUserId($requester->id());
+        $messages = $participant->getMessages($count + 1, $order, $cursor);
 
-        $cursor = null;
-//        if($order === 'ASC') {
-//            if((count($messages) - $count) === 1) {
-//                
-//            }
-//        } else {
-            if((count($messages) - $count) === 1) {
-                $cursor = $messages[count($messages) -1]->id();
-                array_pop($messages);
-            }
+        $nextCursor = null;
+        $prevCursor = null;
+        $messagesNumberMoreThanCount = (count($messages) - $count) === 1;
+        if($cursor && $messagesNumberMoreThanCount) {
+            $nextCursor = $messages->last()->id();
+            $prevMessage = $this->getPrev($participant, $messages->first()->id(), $order);
+            if($prevMessage) { $prevCursor = $prevMessage->id(); }
+            $messages = $messages->toArray();
+            array_pop($messages);
+        }
+        elseif($cursor && !$messagesNumberMoreThanCount) {
+            $prevMessage = $this->getPrev($participant, $messages->first()->id(), $order);
+            if($prevMessage) { $prevCursor = $prevMessage->id(); }
+            $messages = $messages->toArray();
+        }
+        elseif(!$cursor && $messagesNumberMoreThanCount) {
+            $nextCursor = $messages->last()->id();
+            $messages = $messages->toArray();
+            array_pop($messages);
+        }
+//        
+//        $nextMessageCursor = null;
+//        if((count($messages) - $count) === 1) {
+//            $nextMessageCursor = $messages[count($messages) -1]->id();
+//            array_pop($messages);
 //        }
-        
         return new GetMessagesPartResponse(
             $this->trans->transformMultiple($requester, $messages),
-            $cursor
+            $prevCursor,
+            $nextCursor,
        );
+    }
+    
+    function getPrev(\App\Domain\Model\Chats\Participant $participant, string $messageId, string $order): ?\App\Domain\Model\Chats\Message {
+        $oppositeOrder = $order === 'ASC' ? 'DESC' : 'ASC';
+        $firstAndPrev = $participant->getMessages(2, $oppositeOrder, $messageId);
+        if($firstAndPrev->count() === 2) {
+            return $firstAndPrev->last();
+        }
+        return null;
     }
 }

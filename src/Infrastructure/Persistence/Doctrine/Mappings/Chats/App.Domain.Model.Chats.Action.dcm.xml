@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="App\Domain\Model\Chats\Action" table="chat_actions">
+    <entity name="App\Domain\Model\Chats\Action" table="chat_actions" inheritance-type="JOINED" >
         <options>
             <option name="charset">utf8mb4</option>
             <option name="collate">utf8mb4_unicode_ci</option>
@@ -13,10 +13,9 @@
             <generator strategy="AUTO" />
         </id>
         <field name="createdAt" column="created_at" type="datetime" />
-        <field name="type" type="integer" />
-        <field name="messageId" column='message_id' type="string" />
-        <field name="messageClientId" column='message_client_id' type="string" />
-        <field name="messageCreatorId" column='message_creator_id' type="string" />
+        <field name="type" type="string" />
+        <field name="chatId" column='chat_id' type="string" />
+        <field name="chatClientId" column='chat_client_id' type="string" />
         <field name="initiatorId" column='initiator_id' type="string" />
         
         <many-to-one
@@ -25,6 +24,17 @@
             inversed-by="actions"
             orphan-removal='true'
         />
+        
+        <discriminator-column name="discr" type="string" />
+        
+        <discriminator-map>
+            <discriminator-mapping value="chat_create_chat_actions" class="App\Domain\Model\Chats\Actions\CreateChatAction" />
+            <discriminator-mapping value="chat_delete_history_actions" class="App\Domain\Model\Chats\Actions\DeleteHistoryAction" />
+            <discriminator-mapping value="chat_delete_message_actions" class="App\Domain\Model\Chats\Actions\DeleteMessageAction" />
+            <discriminator-mapping value="chat_delete_message_for_all_actions" class="App\Domain\Model\Chats\Actions\DeleteMessageForAllAction" />
+            <discriminator-mapping value="chat_create_message_actions" class="App\Domain\Model\Chats\Actions\CreateMessageAction" />
+            <discriminator-mapping value="chat_read_message_actions" class="App\Domain\Model\Chats\Actions\ReadMessageAction" />
+        </discriminator-map>
         
     </entity>
 </doctrine-mapping>

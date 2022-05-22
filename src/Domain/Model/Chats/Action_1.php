@@ -6,41 +6,29 @@ use App\Domain\Model\Users\User\User;
 use App\Domain\Model\EntityTrait;
 use App\Domain\Model\Chats\Chat;
 
-abstract class Action {
-    private Chat $chat;
+abstract class Action_1 {
     private int $id;
     private string $chatId;
-    private string $chatClientId;
-    private string $type;
+    private int $type;
     private string $initiatorId;
     private \DateTime $createdAt;
     
-    function __construct(Chat $chat, string $initiatorId, string $type) {
-        $this->type = $type;
-        $this->initiatorId = $initiatorId;
-        $this->createdAt = new \DateTime();
-        $this->chat = $chat;
+    function __construct(Chat $chat, User $initiator, int $type) {
         $this->chatId = $chat->id();
-        $this->chatClientId = $chat->clientId();
-    }
-    
-    function getChat(): Chat {
-        return $this->chat;
+        $this->type = $type;
+        $this->initiatorId = $initiator->id();
+        $this->createdAt = new \DateTime();
     }
     
     public function getId(): int {
         return $this->id;
-    }
-    
-    public function getChatClientId(): string {
-        return $this->chatClientId;
     }
 
     public function getChatId(): string {
         return $this->chatId;
     }
 
-    public function getType(): string {
+    public function getType(): int {
         return $this->type;
     }
 

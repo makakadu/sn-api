@@ -1,0 +1,12 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Model\Chats\Actions\DeleteMessageAction" table="chat_delete_message_actions">
+        <field name="messageId" column='message_id' type="string" />
+        <field name="messageClientId" column='message_client_id' type="string" />
+        <field name="messageCreatorId" column='message_creator_id' type="string" />
+
+    </entity>
+</doctrine-mapping>

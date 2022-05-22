@@ -7,7 +7,8 @@ use App\Domain\Model\Users\User\UserRepository;
 use App\Domain\Model\Chats\ChatRepository;
 use App\Domain\Model\Chats\MessageRepository;
 use Pusher\Pusher;
-use Doctrine\Common\Collections\Criteria;
+use App\Domain\Model\Chats\ActionsEnum;
+use App\DataTransformer\Chats\ActionTransformer;
 
 class Patch implements \App\Application\ApplicationService {
     use \App\Application\AppServiceTrait;
@@ -35,26 +36,10 @@ class Patch implements \App\Application\ApplicationService {
             $message = $this->findMessageOrFail($request->value, false);
             $chat->read($requester, $message);
             $this->chats->flush();
-            
-            $currentParticipant = $chat->getParticipantByUserId($requester->id());
 
-            $criteria2 = Criteria::create();
-            $criteria2->where(Criteria::expr()->eq("deletedForAll", 0));
-            $criteria2->andWhere(Criteria::expr()->neq("creatorId", $requester->id()));
-            $criteria2->andWhere(Criteria::expr()->gt("id", $request->value));
-            $unreadMessagesCount = $currentParticipant->messages()->matching($criteria2)->count();
-            
-            $this->pusher->trigger(
-                $channels,
-                'update-last-read-message-id',
-                [
-                    'chat_id' => $chat->id(),
-                    'chat_unique_key' => $chat->getUniqueKey(),
-                    'unread_messages_count' => $unreadMessagesCount,
-                    'last_mead_message_id' => $request->value,
-                    'user_id' => $requester->id()
-                ]
-            );
+            $actionDTO = (new ActionTransformer($requester))->transform($chat->getLastAction());
+            $data = (array)$actionDTO;
+            $this->pusher->trigger($channels, ActionsEnum::READ_MESSAGE, $data);
         }
 //        elseif($request->property === 'reactions_are_disabled') {
 //            $request->value

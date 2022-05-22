@@ -13,6 +13,8 @@ use App\Domain\Model\Chats\MessageRepository;
 use Pusher\Pusher;
 use App\DataTransformer\Chats\ChatTransformer;
 use Doctrine\Common\Collections\Criteria;
+use App\Domain\Model\Chats\ActionsEnum;
+use App\DataTransformer\Chats\ActionTransformer;
 
 class DeleteMessage implements \App\Application\ApplicationService {
     use \App\Application\AppServiceTrait;
@@ -22,12 +24,9 @@ class DeleteMessage implements \App\Application\ApplicationService {
     private ChatTransformer $chatTransformer;
     private Pusher $pusher;
     
-    public function __construct(UserRepository $users, ChatRepository $chats, MessageRepository $messages, MessageTransformer $transformer, Pusher $pusher, ChatTransformer $chatTransformer) {
+    public function __construct(UserRepository $users, ChatRepository $chats, Pusher $pusher) {
         $this->users = $users;
         $this->chats = $chats;
-        $this->messages = $messages;
-        $this->transformer = $transformer;
-        $this->chatTransformer = $chatTransformer;
         $this->pusher = $pusher;
     }
     
@@ -38,29 +37,19 @@ class DeleteMessage implements \App\Application\ApplicationService {
         $chat->removeMessageFor($request->messageId, $requester);
         $this->chats->flush();
         
-        $message = $chat->messages()->get($request->messageId);
+        $lastAction = $chat->getLastAction();
+        $actionDTO = (new ActionTransformer($requester))->transform($lastAction);
         
-        $criteria = Criteria::create();
-        $criteria->where(Criteria::expr()->eq("deletedForAll", false));
-        $criteria->orderBy(array('id' => Criteria::DESC));
-        $criteria->setMaxResults(1);
-        
-        $currentParticipant = $chat->getParticipantByUserId($requester->id());
-        $lastMessage = $currentParticipant->messages()->matching($criteria)->first();
-//        echo $lastMessage->id();exit();
-        
+        /* Я пока точно не знаю стоит ли рассылать это событие всем участникам, потому что всё-таки это приватное действие
+         но прикол в том, что если пользователь удалил сообщение, значит он его прочитал. Если позволить пользователю удалять сообщение через
+         прямой запрос на API, то нужно помечать это сообщение как прочитанное им. 
+         Но сейчас я не вижу смысла усложнять, к тому же это событие возможно получить только зная приватный ключ, поэтому я считаю, что 
+         не стоит таким заниматься сейчас. Это событие будет доставлено только пользователю, который совершил удаление */
+        $data = (array)$actionDTO;
         $this->pusher->trigger(
-            'chat_' . $currentParticipant->user()->id(),
-            'delete-message',
-            [
-                'chat_id' => $chat->id(),
-                'chat_unique_key' => $chat->getUniqueKey(),
-                'message_id' => $request->messageId,
-                'message_client_id' => $message->clientId(),
-                'message_creator_id' => $message->creator()->id(),
-                'chat' => $this->chatTransformer->transform($requester, $chat, 0),
-                'last_message' => $lastMessage ? $this->transformer->transform($requester, $lastMessage) : null
-            ]
+            'chat_' . $chat->getParticipantByUserId($requester->id()),
+            ActionsEnum::DELETE_MESSAGE,
+            $data
         );
         
         return new DeleteMessageResponse("OK");

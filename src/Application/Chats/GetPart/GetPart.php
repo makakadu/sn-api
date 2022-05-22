@@ -181,7 +181,8 @@ class GetPart implements \App\Application\ApplicationService {
             $request->cursor,
             $count +1,
             $request->type,
-            (bool)$request->onlyUnread
+            (bool)$request->onlyUnread,
+            (bool)$request->hideEmpty
         );
 
 //        if(count($chats) > $count) {
@@ -192,7 +193,7 @@ class GetPart implements \App\Application\ApplicationService {
             array_pop($chats);
         }
         $messagesCount = !is_null($request->messagesCount)
-            ? (int)$request->messagesCount : 0;
+            ? (int)$request->messagesCount : null;
         
         $fields = is_null($request->fields) ? [] : explode(',', $request->fields);
         

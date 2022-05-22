@@ -14,7 +14,7 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
         return $this->entityManager->find($this->entityClass, $id);
     }
     
-    public function getChatsOfUserTest(User $user, ?string $interlocutorId, ?string $cursor, int $count, ?string $type, bool $onlyUnread): array {
+    public function getChatsOfUserTest(User $user, ?string $interlocutorId, ?string $cursor, int $count, ?string $type, bool $onlyUnread, bool $hideEmpty = false): array {
         
         $cursorClause = $cursor ? "
            AND
@@ -57,6 +57,24 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
             ) = 1
         " : "";
         
+        $showEmptyClause = $hideEmpty ? "AND (
+            SELECT count(message2.id)
+            FROM chat_messages AS message2
+            WHERE message2.id IN (
+                SELECT pm2.message_id
+                FROM participants_messages AS pm2
+                WHERE pm2.participant_id = (
+                    SELECT cp2.id
+                    FROM chat_participants AS cp2
+                    WHERE cp2.chat_id = chat.id
+                    AND cp2.user_id = '{$user->id()}'
+                )
+            )
+            AND message2.chat_id = chat.id
+            AND message2.deleted_for_all = 0
+            LIMIT 1
+        ) > 0" : "";
+        
         $typeClause = $type ? "AND type = '$type'" : "";
         
         $isUnreadClause = $onlyUnread ?
@@ -84,8 +102,7 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
                 WHERE cp6.chat_id = chat.id
                 AND cp6.user_id = '{$user->id()}'
             )"
-            : "";
-                    
+            : "";    
 
         $sql = "
             SELECT
@@ -109,24 +126,8 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
                 LIMIT 1
             ) as last_active_message_id
             FROM chats AS chat
-            WHERE (
-                SELECT count(message2.id)
-                FROM chat_messages AS message2
-                WHERE message2.id IN (
-                    SELECT pm2.message_id
-                    FROM participants_messages AS pm2
-                    WHERE pm2.participant_id = (
-                        SELECT cp2.id
-                        FROM chat_participants AS cp2
-                        WHERE cp2.chat_id = chat.id
-                        AND cp2.user_id = '{$user->id()}'
-                    )
-                )
-                AND message2.chat_id = chat.id
-                AND message2.deleted_for_all = 0
-                LIMIT 1
-            ) > 0
-            AND ($isParticipant) = 1
+            WHERE ($isParticipant) = 1
+            $showEmptyClause
             $interlocutorClause
             $typeClause
             $isUnreadClause
@@ -134,6 +135,8 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
             ORDER BY last_active_message_id DESC
             LIMIT $count
         ";
+                        
+//                        print_r($sql);exit();
                         
         $em = $this->entityManager;
         $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
@@ -319,29 +322,34 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
         return $res;
     }
     
-    public function getActionsForUser(User $user, ?string $types, ?int $cursor, ?int $count): array {
+    public function getActionsForUser(string $chatId, User $user, ?string $types, ?int $cursor, ?int $count): array {
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('a')->from(\App\Domain\Model\Chats\Action::class, 'a');
+        $qb->where("a.chatId = '$chatId'");
         
-        if($types) {
-            $typesArr = \explode(',', $types);
+//        if($types) {
+//            $typesArr = \explode(',', $types);
+//            
+//            if(in_array('1', $typesArr)) {
+//                $qb->where('a.type = 1');
+//            }
+//            if(in_array('3', $typesArr)) {
+//                $qb->orWhere('a.type = 3');
+//            }
+//            if(in_array('2', $typesArr)) {
+//                $qb->orWhere("a.type = 2 AND a.initiatorId = :user_id");
+//                $qb->setParameter('user_id', $user->id());
+//            }
+//        } else {
+            $qb->andWhere("a.type = 'create-chat'");
+            $qb->orWhere("a.type = 'create-message'");
+            $qb->orWhere("a.type = 'delete-message' AND a.initiatorId = :user_id");
+            $qb->orWhere("a.type = 'delete-message-for-all'");
+            $qb->orWhere("a.type = 'read-message'");
+            $qb->orWhere("a.type = 'delete-history'");
             
-            if(in_array('1', $typesArr)) {
-                $qb->where('a.type = 1');
-            }
-            if(in_array('3', $typesArr)) {
-                $qb->orWhere('a.type = 3');
-            }
-            if(in_array('2', $typesArr)) {
-                $qb->orWhere("a.type = 2 AND a.initiatorId = :user_id");
-                $qb->setParameter('user_id', $user->id());
-            }
-        } else {
-            $qb->where('a.type = 1');
-            $qb->orWhere("a.type = 2 AND a.initiatorId = :user_id");
-            $qb->orWhere('a.type = 3');
             $qb->setParameter('user_id', $user->id());
-        }
+//        }
         
         if($cursor) {
             $cursorDate = new \DateTime();

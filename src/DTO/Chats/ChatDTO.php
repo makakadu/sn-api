@@ -13,7 +13,8 @@ class ChatDTO implements ChatDTOInterface {
     public string $type;
     public ?MessageDTO $lastMessage;
     public array $messages;
-    public ?string $messageCursor;
+    public ?string $prevMessageCursor;
+    public ?string $nextMessageCursor;
     public ?string $lastReadMessageId;
     public int $unreadMessagesCount;
     
@@ -26,7 +27,8 @@ class ChatDTO implements ChatDTOInterface {
         int $createdAt,
         ?MessageDTO $lastMessage,
         array $messages,
-        ?string $messageCursor,
+        ?string $prevMessageCursor,
+        ?string $nextMessageCursor,
         ?string $lastReadMessageId,
         int $unreadMessagesCount
     ) {
@@ -38,7 +40,8 @@ class ChatDTO implements ChatDTOInterface {
         $this->createdAt = $createdAt;
         $this->lastMessage = $lastMessage;
         $this->messages = $messages;
-        $this->messageCursor = $messageCursor;
+        $this->prevMessageCursor = $prevMessageCursor;
+        $this->nextMessageCursor = $nextMessageCursor;
         $this->lastReadMessageId = $lastReadMessageId;
         $this->unreadMessagesCount = $unreadMessagesCount;
     }

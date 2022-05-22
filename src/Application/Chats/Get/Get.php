@@ -41,10 +41,10 @@ class Get implements \App\Application\ApplicationService {
         
         $messagesCount = $request->messagesCount
             ? (int)$request->messagesCount
-            : 10;
+            : null;
         
         return new GetResponse(
-            $this->chatTransformer->transform($requester, $chat, $messagesCount)
+            $this->chatTransformer->transform($requester, $chat, $messagesCount, [], $request->messagesOrder, $request->messagesCursor)
         );
     }
 }

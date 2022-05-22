@@ -143,7 +143,7 @@ class ChatsController extends AbstractController {
     
     function getPart(Request $request, Response $response): Response {
         $queryParams = $request->getQueryParams();
-        
+
         $requestDTO = new GetPartRequest(
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id'),
@@ -166,8 +166,12 @@ class ChatsController extends AbstractController {
         $requestDTO = new GetRequest(
             $request->getAttribute('token')['data']->userId,
             $request->getAttribute('id'),
+            isset($queryParams['messages-cursor'])
+                ? $queryParams['messages-cursor'] : null,
             isset($queryParams['messages-count'])
                 ? $queryParams['messages-count'] : null,
+            isset($queryParams['messages-order'])
+                ? $queryParams['messages-order'] : null,
         );
         $responseDTO = $this->get->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO);

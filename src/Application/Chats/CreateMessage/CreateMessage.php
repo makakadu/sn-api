@@ -10,6 +10,9 @@ use App\Domain\Model\Chats\ChatRepository;
 use Pusher\Pusher;
 use App\DataTransformer\Chats\MessageTransformer;
 use App\Domain\Model\Chats\Action;
+use App\DataTransformer\Chats\ChatTransformer;
+use App\Domain\Model\Chats\ActionsEnum;
+use App\DataTransformer\Chats\ActionTransformer;
 
 class CreateMessage implements \App\Application\ApplicationService {
     use \App\Application\AppServiceTrait;
@@ -17,13 +20,15 @@ class CreateMessage implements \App\Application\ApplicationService {
     
     private Pusher $pusher;
     private MessageTransformer $trans;
+    private ChatTransformer $chatsTrans;
     
-    public function __construct(UserRepository $users, ChatRepository $chats, MessageRepository $messages, Pusher $pusher, MessageTransformer $trans) {
+    public function __construct(UserRepository $users, ChatRepository $chats, MessageRepository $messages, Pusher $pusher, MessageTransformer $trans, ChatTransformer $chatsTrans) {
         $this->users = $users;
         $this->chats = $chats;
         $this->pusher = $pusher;
         $this->messages = $messages;
         $this->trans = $trans;
+        $this->chatsTrans = $chatsTrans;
     }
     
     public function execute(BaseRequest $request): BaseResponse {
@@ -34,23 +39,22 @@ class CreateMessage implements \App\Application\ApplicationService {
         $message = $chat->createMessage($requester, $request->text, $request->clientId);
         $this->messages->flush();
         
-        $channels = [];
+        $lastAction = $chat->getLastAction();
         foreach($chat->participants() as $participant) {
-            $channels[] = 'chat_' . $participant->user()->id();
+            $user = $participant->user();
+            // Для каждого пользователя событие должно отличаться, потому что чат может выглядеть для участников по-разному
+            $actionDTO = (new ActionTransformer($user))->transform($lastAction);
+            $data = (array)$actionDTO;
+            $data['placeId'] = $request->placeId;
+            $this->pusher->trigger(
+                'chat_' . $user->id(),
+                ActionsEnum::CREATE_MESSAGE,
+                $data
+                // Возможно place_id нужно тоже хранить в Action, но я сделаю так только если это будет необходимо,
+                // сейчас, вроде бы, оно нужно только для передачи события через вебсокет. А когда actions загружают через API, то там уже placeId
+                // не нужен, вроде бы
+            );
         }
-
-        $this->pusher->trigger(
-            $channels,
-            'create-message',
-            [
-                'chat_id' => $chat->id(),
-                'chat_client_id' => $chat->clientId(),
-                'chat_unique_key' => $chat->getUniqueKey(),
-                'message_client_id' => $message->clientId(),
-                'message' => $this->trans->transform($requester, $message)
-            ]
-        );
-        
         return new CreateMessageResponse($message->id());
     }
 }

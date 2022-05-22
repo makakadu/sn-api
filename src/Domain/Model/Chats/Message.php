@@ -37,6 +37,10 @@ class Message {
         return $this->clientId;
     }
     
+    function creatorId(): string {
+        return $this->creatorId;
+    }
+    
     function getId(): string {
         return $this->id;
     }
@@ -65,7 +69,13 @@ class Message {
             throw new \App\Application\Exceptions\ForbiddenException(228, 'No rights');
         }
         $this->deletedForAll = true;
-        $this->chat->addAction($initiator, Action::DELETE_MESSAGE_FOR_ALL, $this->id, $this->clientId, $this->creatorId);
+        $this->chat->addAction(new Actions\DeleteMessageForAllAction(
+            $this->chat,
+            $initiator,
+            $this->id,
+            $this->clientId,
+            $this->creatorId
+        ));
     }
     
 //    function deleteForUser(User $user): void {
