@@ -48,23 +48,21 @@ class Create implements \App\Application\ApplicationService {
         $chat = $requester->createChat($participants, $request->clientId, $request->type, $request->firstMessage, $request->messageClientId);
         $this->chats->add($chat);
         $this->chats->flush();
+        $lastChatAction = $chat->getLastAction();
         
-        $channels = [];
         foreach($chat->participants() as $participant) {
-            $channels[] = 'chat_' . $participant->user()->id();
+            $user = $participant->user();
+            $actionDTO = (new ActionTransformer($user))->transform($lastChatAction);
+
+            $data = (array)$actionDTO;
+            $data['place_id'] = $request->placeId;
+            $this->pusher->trigger(
+                'chat_' . $participant->userId(),
+                ActionsEnum::CREATE_CHAT,
+                $data
+            );
         }
-        
-        $actionDTO = (new ActionTransformer($requester))->transform($chat->getLastAction());
         $firstMessage = $chat->messages()->first();
-        
-        // Сразу после создания чата он выглядит одинаково для всех, поэтому отправляем те же самые данные для всех
-        $data = (array)$actionDTO;
-        $data['place_id'] = $request->placeId;
-        $this->pusher->trigger(
-            $channels,
-            ActionsEnum::CREATE_CHAT,
-            $data
-        );
         
         return new CreateResponse($chat->id(), $firstMessage ? $firstMessage->id() : null);
     }

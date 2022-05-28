@@ -31,13 +31,7 @@ class DeleteHistory implements \App\Application\ApplicationService {
         
         $requester = $this->findRequesterOrFail($request->requesterId);
         $chat = $this->findChatOrFail($request->chatId, true);
-        $currentParticipant = null;
-        foreach($chat->participants() as $participant) {
-            if($participant->user()->equals($requester)) {
-                $currentParticipant = $participant;
-                break;
-            }
-        }
+        $currentParticipant = $chat->getParticipantByUserId($requester->id());
         $currentParticipant->clearHistory();
         $this->chats->flush();
         
@@ -45,7 +39,7 @@ class DeleteHistory implements \App\Application\ApplicationService {
         $actionDTO = (new ActionTransformer($requester))->transform($lastAction);
         $data = (array)$actionDTO;
         $this->pusher->trigger(
-            'chat_' . $currentParticipant->user()->id(),
+            'chat_' . $currentParticipant->userId(),
             ActionsEnum::DELETE_HISTORY,
             $data
         );

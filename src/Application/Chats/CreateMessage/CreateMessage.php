@@ -41,13 +41,13 @@ class CreateMessage implements \App\Application\ApplicationService {
         
         $lastAction = $chat->getLastAction();
         foreach($chat->participants() as $participant) {
-            $user = $participant->user();
+            $userId = $participant->userId();
             // Для каждого пользователя событие должно отличаться, потому что чат может выглядеть для участников по-разному
-            $actionDTO = (new ActionTransformer($user))->transform($lastAction);
+            $actionDTO = (new ActionTransformer($participant->user()))->transform($lastAction);
             $data = (array)$actionDTO;
             $data['placeId'] = $request->placeId;
             $this->pusher->trigger(
-                'chat_' . $user->id(),
+                'chat_' . $userId,
                 ActionsEnum::CREATE_MESSAGE,
                 $data
                 // Возможно place_id нужно тоже хранить в Action, но я сделаю так только если это будет необходимо,

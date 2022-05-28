@@ -40,7 +40,7 @@ class TypingMessage implements \App\Application\ApplicationService {
         $channels = [];
         foreach($chat->participants() as $participant) {
             if($participant->user()->id() !== $requester->id()) {
-                $channels[] = 'chat_' . $participant->user()->id();
+                $channels[] = 'chat_' . $participant->userId();
             }
         }
         

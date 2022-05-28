@@ -27,7 +27,7 @@ class PatchMessage implements \App\Application\ApplicationService {
 
         $channels = [];
         foreach($message->chat()->participants() as $participant) {
-            $channels[] = 'chat_' . $participant->user()->id();
+            $channels[] = 'chat_' . $participant->userId();
         }
         if($request->property === 'is_deleted') {
             $message->deleteForAll($requester);

@@ -46,8 +46,9 @@ class DeleteMessage implements \App\Application\ApplicationService {
          Но сейчас я не вижу смысла усложнять, к тому же это событие возможно получить только зная приватный ключ, поэтому я считаю, что 
          не стоит таким заниматься сейчас. Это событие будет доставлено только пользователю, который совершил удаление */
         $data = (array)$actionDTO;
+        $participant = $chat->getParticipantByUserId($requester->id());
         $this->pusher->trigger(
-            'chat_' . $chat->getParticipantByUserId($requester->id()),
+            'chat_' . $participant->userId(),
             ActionsEnum::DELETE_MESSAGE,
             $data
         );
