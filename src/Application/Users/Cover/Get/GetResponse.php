@@ -3,12 +3,12 @@ declare(strict_types=1);
 namespace App\Application\Users\Cover\Get;
 
 use App\Application\BaseResponse;
-use App\DTO\Users\PictureDTO;
+use App\DTO\Users\CoverDTO;
 
 class GetResponse implements BaseResponse {
-    public PictureDTO $picture;
+    public CoverDTO $cover;
     
-    function __construct(PictureDTO $picture) {
-        $this->picture = $picture;
+    function __construct(CoverDTO $cover) {
+        $this->cover = $cover;
     }
 }

@@ -31,7 +31,7 @@ abstract class CoverAppService implements ApplicationService {
         $this->photosAuth = $photosAuth;
     }
     
-    protected function findProfilePictureOrFail(string $coverId): ProfilePicture {
+    protected function findProfileCoverOrFail(string $coverId): Cover {
         $cover = $this->covers->getById($coverId);
         
         if(!$cover) {// || $picture->owner()->isSoftlyDeleted()) {

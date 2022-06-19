@@ -46,7 +46,7 @@ class ProfileTransformer extends Transformer {
     function transformMultipleToSubscriberDTO(array $profiles): array {
         $dtos = [];
         foreach($profiles as $profile) {
-            $picture = $profile->picture();
+            $picture = $profile->currentPicture();
             
             $dtos[] = new \App\DTO\Users\SubscriberDTO(
                 $profile->id(),
@@ -94,7 +94,7 @@ class ProfileTransformer extends Transformer {
             }
             
             $subscriptionDTO = null;
-            $subscription = null; //$this->subscriptions->getByUsersIds($requester->id(), $profile->id());
+            $subscription = $this->subscriptions->getByUsersIds($requester->id(), $profile->id());
             
             if($subscription) {
                 $subscriptionsTrans = new SubscriptionTransformer();
@@ -107,14 +107,14 @@ class ProfileTransformer extends Transformer {
         $postsCount = 0;//$this->posts->getCountOfActiveAndAccessibleToRequesterByOwner($requester, $profile);
         
         $picturesDTOs = [];
-//        foreach($profile->pictures() as $picture) {
-//            $picturesDTOs[] = new \App\DTO\Users\PictureDTO(
-//                    $picture->id(),
-//                    $picture->versions(),
-//                    null,
-//                    $this->creationTimeToTimestamp($picture->createdAt())
-//            );
-//        }
+        foreach($profile->pictures() as $picture) {
+            $picturesDTOs[] = new \App\DTO\Users\PictureDTO(
+                $picture->id(),
+                $picture->versions(),
+                null,
+                $this->creationTimeToTimestamp($picture->createdAt())
+            );
+        }
         $coversDTOs = [];
         $coverTrans = new CoverTransformer();
         foreach($profile->covers() as $cover) {

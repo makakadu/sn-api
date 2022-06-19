@@ -97,7 +97,7 @@ class ChatDoctrineRepository extends AbstractDoctrineRepository implements ChatR
                 LIMIT 1 
             ) >
             (
-                SELECT cp6.last_read_message_id
+                SELECT coalesce(cp6.last_read_message_id, '')
                 FROM chat_participants AS cp6
                 WHERE cp6.chat_id = chat.id
                 AND cp6.user_id = '{$user->id()}'

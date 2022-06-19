@@ -1,0 +1,9 @@
+[2022-06-06T12:10:02.433120+03:00] errors_handler_middleware.ERROR: Connection 01g4w4dvjts9cqhav7t0kwdrv5 not found  
+[2022-06-06T12:11:09.117595+03:00] errors_handler_middleware.ERROR: Connection 01g4w4fgj2w9xb44qgrtrp5h0z not found  
+[2022-06-06T12:23:24.607384+03:00] errors_handler_middleware.ERROR: Connection 01g4w52df9wmxksg44vayc69q2 is already accepted  
+[2022-06-06T12:23:32.095814+03:00] errors_handler_middleware.ERROR: Connection 01g4w52df9wmxksg44vayc69q2 is already accepted  
+[2022-06-06T12:24:22.228516+03:00] errors_handler_middleware.ERROR: Connection 01g4w52df9wmxksg44vayc69q2 is already accepted  
+[2022-06-06T12:29:58.538258+03:00] errors_handler_middleware.ERROR: Connection 01g4w5h2dqq2m4cha1x2gznxdy is already accepted  
+[2022-06-06T12:30:09.532482+03:00] errors_handler_middleware.ERROR: Connection 01g4w5h2dqq2m4cha1x2gznxdy is already accepted  
+[2022-06-06T12:30:54.647218+03:00] errors_handler_middleware.ERROR: Connection 01g4w5m73qb3s23avkmj7c3jyc is already accepted  
+[2022-06-06T12:31:32.215216+03:00] errors_handler_middleware.ERROR: Connection 01g4w5n876mkc2dmg1wrqfvkff not found  

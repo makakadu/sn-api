@@ -213,7 +213,8 @@ class ChatsController extends AbstractController {
             $request->getAttribute('id'),
             $parsedBody['client_id'],
             $parsedBody['text'],
-            $parsedBody['place_id']
+            $parsedBody['place_id'],
+            $parsedBody['replied_id'],
         );
         $responseDTO = $this->createMessage->execute($requestDTO);
         return $this->prepareResponse($response, $responseDTO, 201);

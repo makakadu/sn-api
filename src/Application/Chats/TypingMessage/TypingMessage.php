@@ -49,7 +49,8 @@ class TypingMessage implements \App\Application\ApplicationService {
             'typing-message',
             [
                 'creator_id' => $requester->id(),
-                'chat_id' => $chat->id()
+                'chat_id' => $chat->id(),
+                'timestamp' => (new \DateTime())->getTimestamp() * 1000
             ]
         );
         

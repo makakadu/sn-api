@@ -10,16 +10,16 @@ class GetMeResponse implements BaseResponse {
     public string $firstName;
     public string $lastName;
     public string $email;
-    public ?string $avatar;
+    public ?string $picture;
     public int $lastRequestsCheck;
     
-    public function __construct(string $id, string $username, string $firstName, string $lastName, string $email, ?string $avatar, int $lastRequestsCheck) {
+    public function __construct(string $id, string $username, string $firstName, string $lastName, string $email, ?string $picture, int $lastRequestsCheck) {
         $this->id = $id;
         $this->username = $username;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->email = $email;
-        $this->avatar = $avatar;
+        $this->picture = $picture;
         $this->lastRequestsCheck = $lastRequestsCheck;
     }
 

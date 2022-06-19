@@ -33,7 +33,9 @@ class MessageTransformer extends Transformer {
             $message->chat()->id(),
             $message->text(),
             $this->creationTimeToTimestamp($message->createdAt()),
-            $isReadBy
+            $isReadBy,
+            $message->getIsEdited(),
+            $message->getReplied() ? $this->transform($requester, $message->getReplied()) : null
         );
     }
     

@@ -181,7 +181,7 @@ class ChatTransformer extends Transformer {
         );
     }
     
-    function transformPartial(User $requester, Chat $chat, int $messagesCount, array $fields, string $messagesOrder = "ASC", ?string $messagesCursor = null): PartialChatDTO {
+    function transformPartial(User $requester, Chat $chat, ?int $messagesCount, array $fields, ?string $messagesOrder = "ASC", ?string $messagesCursor = null): PartialChatDTO {
         $dto = new PartialChatDTO($chat->id());
         $dto->clientId = $chat->clientId();
         

@@ -290,18 +290,20 @@ class User {
 //        }
 //    }
     
-    function currentCover(): ?CurrentProfilePicture {
-        $criteria = Criteria::create()->setMaxResults(1);
-        /** @var ArrayCollection<string, Cover> $covers */
-        $covers = $this->covers;
-        
-        $matched = $covers->matching($criteria);
-        if(count($matched)) {
-            $key = array_key_first($matched->toArray());
-            return $matched[$key];
-        } else {
-            return null;
-        }
+    function currentCover(): ?Cover {
+//        $criteria = Criteria::create()->setMaxResults(1);
+//        /** @var ArrayCollection<string, Cover> $covers */
+//        $covers = $this->covers;
+//        
+       $lastCover = $this->covers->last();
+       return $lastCover ? $lastCover : null;
+//        $matched = $covers->matching($criteria);
+//        if(count($matched)) {
+//            $key = array_key_first($matched->toArray());
+//            return $matched[$key];
+//        } else {
+//            return null;
+//        }
     }
     
     function createConnectionsList(string $name): ConnectionsList {

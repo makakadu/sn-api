@@ -12,15 +12,20 @@ class CreateMessageRequest implements BaseRequest {
     public $text;
     /** @var mixed $placeId */
     public $placeId;
+    /** @var mixed $repliedId */
+    public $repliedId;
             
     /**
      * @param mixed $text
+     * @param mixed $placeId
+     * @param mixed $repliedId
      */
-    function __construct(string $requesterId, string $chatId, string $clientId, $text, $placeId) {
+    function __construct(string $requesterId, string $chatId, string $clientId, $text, $placeId, $repliedId) {
         $this->requesterId = $requesterId;
         $this->chatId = $chatId;
         $this->clientId = $clientId;
         $this->text = $text;
         $this->placeId = $placeId;
+        $this->repliedId = $repliedId;
     }
 }

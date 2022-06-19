@@ -14,23 +14,43 @@ class Message {
     private User $creator;
     private string $text;
     private Chat $chat;
+    private ?string $chatId = null;
     private bool $deletedForAll;
     private array $deletedFor;
 //    private Collection $deletedFor;
     public string $creatorId;
+    public bool $isEdited = false;
+    private ?self $replied;
 
-    function __construct(string $clientId, User $creator, Chat $chat, string $text) {
+    function __construct(string $clientId, User $creator, Chat $chat, string $text, ?self $replied) {
         $this->id = (string)Ulid::generate(true);
         $this->clientId = $clientId;
         $this->creator = $creator;
         $this->creatorId = $creator->id();
         $this->chat = $chat;
+        $this->chatId = $chat->id();
         $this->text = $text;
         $this->deletedForAll = false;
         $this->deletedFor = [];//new ArrayCollection();
         $this->createdAt = new \DateTime('now');
         $this->isRead = false;
+        if($replied && $replied->chatId !== $this->chatId) {
+            throw new \InvalidArgumentException('Message from another chat');
+        }
+        $this->replied = $replied;
 //        echo $this->key;exit();
+    }
+    
+    public function getIsEdited(): bool {
+        return $this->isEdited;
+    }
+
+    function getReplied(): ?self {
+        return $this->replied;
+    }
+    
+    function chatId(): string {
+        return $this->chatId;
     }
     
     function clientId(): string {
@@ -55,6 +75,7 @@ class Message {
     
     function changeText(string $text): void {
         $this->text = $text;
+        $this->isEdited = true;
     }
 
     function creator(): User { return $this->creator; }

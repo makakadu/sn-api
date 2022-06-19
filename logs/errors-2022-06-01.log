@@ -1,0 +1,1 @@
+[2022-06-01T16:01:54.545011+03:00] errors_handler_middleware.ERROR: (error handler) imagecreatefrompng(): '/media/aleksey/F0BE6575B0AF464D/Misc/Programming/socialnetwork/scback/api/images/temp/629763425e26a' is not a valid PNG file on line 360 in file /media/aleksey/F0BE6575B0AF464D/Misc/Programming/socialnetwork/scback/src/Domain/Model/Common/PhotoService.php. (error type: 2)  

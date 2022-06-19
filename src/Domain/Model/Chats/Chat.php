@@ -65,7 +65,7 @@ class Chat {
         }
         $firstMessage = null;
         if($text) {
-            $firstMessage = $this->createMessage($creator, $text, $messageClientId, true);
+            $firstMessage = $this->createMessage($creator, $text, $messageClientId, null, true);
         }
         $this->actions->add(new CreateChatAction($this, $creator, $firstMessage));
     }
@@ -79,7 +79,9 @@ class Chat {
         $criteria->where(Criteria::expr()->eq("deletedForAll", false));
         $criteria->orderBy(array('id' => Criteria::DESC));
         $criteria->setMaxResults(1);
-        return $currentParticipant->messages()->matching($criteria)->first();
+        
+        $message = $currentParticipant->messages()->matching($criteria)->first();
+        return $message ? $message : null;
     }
     
     function getUniqueKey(): string {
@@ -179,12 +181,12 @@ class Chat {
         $this->participants->remove($participantId);
     }
     
-    function createMessage(User $creator, string $text, string $clientId, bool $isNewChat = false): Message {
+    function createMessage(User $creator, string $text, string $clientId, ?Message $replied = null, bool $isNewChat = false): Message {
         $creatorParticipant = $this->getParticipantByUserId($creator->id());
         if(!$creatorParticipant) {
             throw new \App\Application\Exceptions\ForbiddenException(228, 'No rights');
         }
-        $message = new Message($clientId, $creator, $this, $text);
+        $message = new Message($clientId, $creator, $this, $text, $replied);
         $this->messages->add($message);
         foreach($this->participants as $participant) {
             $participant->addMessage($message);

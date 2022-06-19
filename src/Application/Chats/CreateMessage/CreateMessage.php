@@ -36,7 +36,11 @@ class CreateMessage implements \App\Application\ApplicationService {
         $requester = $this->findRequesterOrFailIfNotFoundOrInactive($request->requesterId);
         $chat = $this->findChatOrFail($request->chatId, true, null);
         
-        $message = $chat->createMessage($requester, $request->text, $request->clientId);
+        $replied = null;
+        if($request->repliedId) {
+            $replied = $this->messages->getById($request->repliedId);
+        }
+        $message = $chat->createMessage($requester, $request->text, $request->clientId, $replied);
         $this->messages->flush();
         
         $lastAction = $chat->getLastAction();

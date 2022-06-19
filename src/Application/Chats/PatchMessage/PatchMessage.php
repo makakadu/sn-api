@@ -41,6 +41,18 @@ class PatchMessage implements \App\Application\ApplicationService {
                 ActionsEnum::DELETE_MESSAGE_FOR_ALL,
                 $data
             );
+        } else if($request->property === 'text') {
+            $message->changeText($request->value);
+            $this->messages->flush();
+            $chat = $message->chat();
+//            $lastAction = $chat->getLastAction();
+//            $actionDTO = (new ActionTransformer($requester))->transform($lastAction);
+//            $data = (array)$actionDTO;
+//            $this->pusher->trigger(
+//                $channels,
+//                ActionsEnum::DELETE_MESSAGE_FOR_ALL,
+//                $data
+//            );
         }
         else {
             throw new \App\Application\Exceptions\UnprocessableRequestException(123, "Incorrect param name");

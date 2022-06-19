@@ -18,13 +18,16 @@
         
         <field name="createdAt" column="created_at" type="datetime" />
         <field name="deletedForAll" column="deleted_for_all" type="boolean" />
+        <field name="isEdited" column="is_edited" type="boolean" />
         <field name="deletedFor" column="deleted_for" type="array" />
         <field name="text" type="string" />
         <field name="creatorId" column="_creator_id" type="string" />
         <field name="clientId" column='client_id' type="string" />
+        <field name="chatId" column='_chat_id' type="string" />
         
         <many-to-one target-entity="App\Domain\Model\Users\User\User" field="creator" />
         <many-to-one target-entity="App\Domain\Model\Chats\Chat" field="chat" inversed-by="messages" orphan-removal='true' />
+        <many-to-one target-entity="App\Domain\Model\Chats\Message" field="replied" />
         
 <!--        <many-to-many target-entity="App\Domain\Model\Chats\Participant" field="deletedFor" index-by="id" >
             <join-table name="deleted_for_participants" >
