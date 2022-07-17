@@ -137,7 +137,8 @@ class ConnectionDoctrineRepository extends AbstractDoctrineRepository implements
         }
         if($start) {
             $startDate = new \DateTime();
-            $startDate->setTimestamp($start / 1000);
+            $timestamp = (int)($start / 1000);
+            $startDate->setTimestamp($timestamp);
             $qb->andWhere('c.createdAt >= :start')
             ->setParameter('start', $startDate);
         }
@@ -173,7 +174,8 @@ class ConnectionDoctrineRepository extends AbstractDoctrineRepository implements
         }
         if($start) {
             $startDate = new \DateTime();
-            $startDate->setTimestamp($start / 1000);
+            $timestamp = (int)($start / 1000);
+            $startDate->setTimestamp($timestamp);
             $qb->andWhere('c.createdAt >= :start')
             ->setParameter('start', $startDate);
         }

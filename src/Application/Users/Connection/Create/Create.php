@@ -15,19 +15,23 @@ use Assert\Assertion;
 use App\Application\Exceptions\ValidationException;
 use App\Domain\Model\DomainExceptionAlt;
 use Pusher\Pusher;
+use App\DataTransformer\Users\ConnectionTransformer;
 
 class Create extends ConnectionAppService {
     
     private SubscriptionRepository $subscriptions;
     private Pusher $pusher;
+    private ConnectionTransformer $trans;
     
     function __construct(
         UserRepository $users, ConnectionRepository $connections,
-        ConnectionsAuth $auth, SubscriptionRepository $subscriptions, Pusher $pusher
+        ConnectionsAuth $auth, SubscriptionRepository $subscriptions,
+        Pusher $pusher, ConnectionTransformer $trans
     ) {
         parent::__construct($users, $connections, $auth);
         $this->subscriptions = $subscriptions;
         $this->pusher = $pusher;
+        $this->trans = $trans;
     }
     
     public function execute(BaseRequest $request): BaseResponse {
@@ -60,7 +64,11 @@ class Create extends ConnectionAppService {
         }
         
         $this->connections->flush();
-        $this->pusher->trigger($requestee->id(), 'create-connection', ['id' => $connection->id(), 'targetId' => $requestee->id()]);
+        $this->pusher->trigger($requestee->id(), 'create-connection', [
+            'id' => $connection->id(),
+            'initiator' => $this->trans->creatorToDTO($requester),
+            'targetId' => $requestee->id()
+        ]);
 
         return new CreateResponse($connection->id(), $createdSubscriptionId);
     }

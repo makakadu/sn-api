@@ -9,6 +9,7 @@ use App\Domain\Model\Users\User\UserRepository;
 use App\Domain\Model\Users\Connection\ConnectionRepository;
 use App\Domain\Model\Authorization\ConnectionsAuth;
 use App\Domain\Model\Users\Subscription\SubscriptionRepository;
+use Pusher\Pusher;
 
 class Delete implements \App\Application\ApplicationService {
     use \App\Application\AppServiceTrait;
@@ -19,11 +20,13 @@ class Delete implements \App\Application\ApplicationService {
     
     function __construct(
         UserRepository $users, ConnectionRepository $connections,
-        ConnectionsAuth $auth, SubscriptionRepository $subscriptions
+        ConnectionsAuth $auth, SubscriptionRepository $subscriptions,
+        Pusher $pusher
     ) {
         $this->subscriptions = $subscriptions;
         $this->users = $users;
         $this->auth = $auth;
+        $this->pusher = $pusher;
         $this->connections = $connections;
     }
     
@@ -34,6 +37,18 @@ class Delete implements \App\Application\ApplicationService {
         $this->auth->failIfCannotDelete($requester, $connection);
         //$connection->delete($requester);
         $this->connections->remove($connection);
+        $this->connections->flush();
+
+        $this->pusher->trigger(
+            [
+                $connection->getUser1()->id(),
+                $connection->getUser2()->id(),
+            ], 
+            'delete-connection',
+            [
+                'id' => $connection->id(),
+            ]
+        );
 
         return new DeleteResponse('ok');
     }
